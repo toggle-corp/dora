@@ -19,8 +19,11 @@
         "#components/*": ["./src/components/*"],
         "#config/*": ["./src/config/*"],
         "#request": ["./src/request"],
+        "#resources": ["./resources"],
         "#resources/*": ["./resources/*"],
         "#schema": ["./src/schema"],
+        "#re-map": ["./src/vendor/re-map"],
+        "#re-map/*": ["./src/vendor/re-map/*"],
         "#ts": ["./src/ts"],
         "#utils/*": ["./src/utils/*"],
         "#views/*": ["./src/views/*"]

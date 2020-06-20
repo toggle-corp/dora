@@ -153,11 +153,16 @@
     "dependencies": {
         "@togglecorp/fujs": "^1.8.0",
         "@togglecorp/ravl": "^2.0.0",
+        "@turf/bbox": "^6.0.1",
+        "@turf/buffer": "^5.1.5",
+        "@types/mapbox-gl": "^1.10.4",
         "core-js": "3",
         "immer": "^6.0.9",
+        "mapbox-gl": "^1.11.0",
         "react": "^0.0.0-experimental-33c3af284",
         "react-dom": "^0.0.0-experimental-33c3af284",
         "react-icons": "^3.9.0",
-        "react-router-dom": "^5.2.0"
+        "react-router-dom": "^5.2.0",
+        "resize-observer-polyfill": "^1.5.1"
     }
 }

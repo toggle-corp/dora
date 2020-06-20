@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { _cs, isDefined, isNotDefined } from '@togglecorp/fujs';
 
 import Button from '#components/Button';
@@ -14,6 +14,7 @@ import newMuni from '#resources/new-admin2.json';
 
 import AdminLevels from './AdminLevels';
 import Sets from './Sets';
+import Map from './ComparisonMap';
 import {
     AdminLevel,
     AdminSet,
@@ -32,9 +33,11 @@ interface LinkListingProps {
     data: { [key: string]: Link[] } | undefined;
     firstSet: AdminSet;
     secondSet: AdminSet;
+    className?: string;
 }
 function LinkListing(props: LinkListingProps) {
     const {
+        className,
         currentAdminLevel,
         data,
         firstSet,
@@ -82,7 +85,7 @@ function LinkListing(props: LinkListingProps) {
         });
 
     return (
-        <div className={styles.links}>
+        <div className={_cs(styles.links, className)}>
             {added.length > 0 && (
                 <>
                     <h2>Addition </h2>
@@ -225,6 +228,13 @@ function Home(props: Props) {
 
     const firstSet = sets[0];
     const secondSet = sets[1];
+    const oldSource = useMemo(() => (
+        firstSet.settings.find((s) => s.adminLevel === currentAdminLevel)?.geoJson
+    ), [currentAdminLevel]);
+
+    const newSource = useMemo(() => (
+        secondSet.settings.find((s) => s.adminLevel === currentAdminLevel)?.geoJson
+    ), [currentAdminLevel]);
 
     const handleCalculate = useCallback(
         () => {
@@ -259,7 +269,13 @@ function Home(props: Props) {
                     onChange={setCurrentAdminLevel}
                 />
                 <div className={styles.content}>
+                    <Map
+                        className={styles.map}
+                        oldSource={oldSource}
+                        newSource={newSource}
+                    />
                     <LinkListing
+                        className={styles.linkListing}
                         data={mapping}
                         currentAdminLevel={currentAdminLevel}
                         firstSet={firstSet}

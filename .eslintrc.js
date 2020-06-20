@@ -28,6 +28,7 @@ module.exports = {
                     '#config': './src/config',
                     '#request': './src/request',
                     '#resources': './resources',
+                    '#re-map': './src/vendor/re-map',
                     '#schema': './src/schema',
                     '#ts': './src/ts',
                     '#utils': './src/utils',
