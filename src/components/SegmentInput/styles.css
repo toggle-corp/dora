@@ -1,0 +1,8 @@
+.segment-input {
+    display: flex;
+    flex-direction: column;
+
+    .input-container {
+        display: flex;
+    }
+}

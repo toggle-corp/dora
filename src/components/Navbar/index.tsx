@@ -13,43 +13,14 @@ const Navbar = (props: Props) => {
 
     return (
         <nav className={_cs(className, styles.navbar)}>
-            <div className={styles.appBrand}>
+            <NavLink
+                exact
+                className={styles.appBrand}
+                activeClassName={styles.active}
+                to="/"
+            >
                 Dora
-            </div>
-            <div className={styles.navLinks}>
-                <NavLink
-                    exact
-                    className={styles.link}
-                    activeClassName={styles.active}
-                    to="/"
-                >
-                    Home
-                </NavLink>
-                <NavLink
-                    exact
-                    className={styles.link}
-                    activeClassName={styles.active}
-                    to="/dashboard/"
-                >
-                    Dashboard
-                </NavLink>
-                <NavLink
-                    exact
-                    to="/infographics/"
-                    className={styles.link}
-                    activeClassName={styles.active}
-                >
-                    Infographics
-                </NavLink>
-                <NavLink
-                    exact
-                    to="/glossary/"
-                    className={styles.link}
-                    activeClassName={styles.active}
-                >
-                    Glossary
-                </NavLink>
-            </div>
+            </NavLink>
         </nav>
     );
 };
