@@ -1,4 +1,4 @@
-import { isDefined, getDuplicates, isNotDefined, listToMap } from '@togglecorp/fujs';
+import { isDefined, getDuplicates, isNotDefined, listToMap, findDifferenceInList } from '@togglecorp/fujs';
 
 import {
     Settings,
@@ -146,4 +146,86 @@ export function validate(adminLevels: AdminLevel[], settingsCollection: Settings
     });
 
     return errorMapping;
+}
+
+export interface Link {
+    from?: number;
+    to?: number;
+}
+
+// NOTE:
+// - Add all of them with same which are not duplicates
+function generateUnitMapping(unitFoo: Settings, unitBar: Settings) {
+    const fooProperties = getProperties(unitFoo);
+    const fooDuplicateNames = getDuplicates(
+        fooProperties
+            .map((item) => item.name)
+            .filter(isDefined)
+            .map((item) => item.toLocaleLowerCase()),
+        (item) => item,
+    );
+    const fooDuplicateNamesSet = new Set(fooDuplicateNames);
+    const validFooProperties = fooProperties.filter(
+        (item) => isDefined(item.name) && !fooDuplicateNamesSet.has(item.name.toLocaleLowerCase()),
+    );
+    const invalidFooProperties = fooProperties.filter((item) => (
+        isNotDefined(item.name) || fooDuplicateNamesSet.has(item.name.toLocaleLowerCase())
+    ));
+
+    const barProperties = getProperties(unitBar);
+    const barDuplicateNames = getDuplicates(
+        barProperties
+            .map((item) => item.name)
+            .filter(isDefined)
+            .map((item) => item.toLocaleLowerCase()),
+        (item) => item,
+    );
+    const barDuplicateNamesSet = new Set(barDuplicateNames);
+    const validBarProperties = barProperties.filter(
+        (item) => isDefined(item.name) && !barDuplicateNamesSet.has(item.name.toLocaleLowerCase()),
+    );
+    const invalidBarProperties = barProperties.filter((item) => (
+        isNotDefined(item.name) || barDuplicateNamesSet.has(item.name.toLocaleLowerCase())
+    ));
+
+    const {
+        added,
+        modified,
+        removed,
+        // unmodified, // NOTE: we will note have unmodified at all
+    } = findDifferenceInList(validFooProperties, validBarProperties, (item) => item.name);
+    // NOTE: name is defined here
+
+    const links: Link[] = [];
+    links.push(...added.map((item) => ({ to: item.index })));
+    links.push(...invalidBarProperties.map((item) => ({ to: item.index })));
+
+    links.push(...removed.map((item) => ({ from: item.index })));
+    links.push(...invalidFooProperties.map((item) => ({ from: item.index })));
+
+    links.push(...modified.map((item) => ({ from: item.old.index, to: item.new.index })));
+
+    return links;
+}
+
+export function generateMapping(adminLevels: AdminLevel[], foo: Settings[], bar: Settings[]) {
+    const linkMapping : {
+        [key: string]: Link[];
+    } = listToMap(
+        adminLevels,
+        (adminLevel) => adminLevel.key,
+        () => [],
+    );
+
+    adminLevels.forEach((adminLevel) => {
+        const unitFoo = foo.find((item) => item.adminLevel === adminLevel.key);
+        const unitBar = bar.find((item) => item.adminLevel === adminLevel.key);
+        if (!unitFoo || !unitBar) {
+            console.error(`Admin level '${adminLevel.key}' must be defined for both sets`);
+            return;
+        }
+        linkMapping[adminLevel.key] = generateUnitMapping(unitFoo, unitBar);
+    });
+
+    return linkMapping;
 }

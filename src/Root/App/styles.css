@@ -1,15 +1,57 @@
 :root {
+    /* SPACING */
+    --spacing-super-small: 1px;
     --spacing-extra-small: 3px;
     --spacing-small: 6px;
+    --spacing-small-medium: 8px;
     --spacing-medium: 10px;
+    --spacing-large-medium: 13px;
     --spacing-large: 16px;
 
-    --color-accent: #786cf4;
-    --color-danger: firebrick;
-    --color-success: forestgreen;
+    /* RADIUS */
 
-    --color-background-card: #fafafa;
-    --color-separator: #f0f0f0;
+    --radius-button: 4px;
+    --radius-input: 4px;
+    --radius-modal: 8px;
+
+    /* DIMENSIONS */
+    --width-separator-thin: 1px;
+    --width-separator-medium: 2px;
+
+    --width-sidepanel: 420px;
+    --width-scrollbar: 7px;
+
+    /* FONT SIZE */
+    --font-size-extra-small: 10px;
+    --font-size-small: 11px;
+    --font-size-small-medium: 12px;
+    --font-size-medium: 13px;
+    --font-size-large-medium: 15px;
+    --font-size-large: 18px;
+    --font-size-extra-large: 24px;
+
+    /* FONT WEIGHT */
+    --font-weight-light: 400;
+    --font-weight-medium: 400;
+    --font-weight-bold: 700;
+
+    /* COLOR PALETTE */
+    --color-primary: #6200ee;
+    --color-accent: #03dac6;
+    --color-danger: #f34236;
+    --color-success: #00c853;
+    --color-warning: tomato;
+
+
+    /* COLOR GENERAL */
+    --color-background: #fff;
+
+    --color-background-accent-hint: #18cc9c55; /* FIXME: remove this usage */
+
+    /* COLOR BACKDROP */
+
+    --color-backdrop-light: rgba(255, 255, 255, .8);
+    --color-backdrop-dark: rgba(0, 0, 0, .5);
 
     /* COLOR INPUT */
     --color-input-background: #dae0e7;
@@ -20,20 +62,36 @@
     --color-button-background: #dae0e7;
     --color-button-background-disabled: #e4e9ef;
 
+    /* COLOR SHADOW */
 
-    --width-separator-thin: 1px;
-    --width-separator-medium: 2px;
+    --color-shadow: rgba(0, 0, 0, .3);
 
-    --font-size-medium: 16px;
-    --font-size-large: 20px;
 
-    --font-weight-light: 300;
-    --font-weight-medium: 400;
-    --font-weight-bold: 700;
+    /* COLOR TEXT */
+    --color-text: #243244;
 
-    /* RADIUS */
+    --color-text-on-primary: rgba(255, 255, 255, .9);
+    --color-text-on-accent: rgba(255, 255, 255, .9);
+    --color-text-on-danger: rgba(255, 255, 255, .9);
+    --color-text-on-success: rgba(255, 255, 255, .9);
+    --color-text-on-warning: rgba(255, 255, 255, .9);
 
-    --radius-button: 4px;
-    --radius-input: 4px;
-    --radius-modal: 8px;
+    --color-text-light-on-primary: rgba(255, 255, 255, .5);
+    --color-text-light-on-accent: rgba(255, 255, 255, .5);
+    --color-text-light-on-primary: rgba(255, 255, 255, .5);
+    --color-text-light-on-accent: rgba(255, 255, 255, .5);
+    --color-text-light-on-danger: rgba(255, 255, 255, .5);
+    --color-text-light-on-success: rgba(255, 255, 255, .5);
+    --color-text-light-on-warning: rgba(255, 255, 255, .5);
+
+    --color-text-label: #576374;
+    --color-text-disabled: #b8c2cd;
+
+    /* COLOR SEPARATOR */
+    --color-separator: #b8c2cd;
+}
+
+body {
+    color: var(--color-text);
+    font-size: var(--font-size-medium);
 }
