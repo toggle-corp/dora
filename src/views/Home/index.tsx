@@ -54,10 +54,32 @@ function LinkListing(props: LinkListingProps) {
     }
 
     const deleted = unitMapping
-        .filter((item) => isDefined(item.from) && isNotDefined(item.to));
+        .filter((item) => isDefined(item.from) && isNotDefined(item.to))
+        .map((item) => {
+            const property = getProperty(
+                firstSettings.pointer,
+                firstSettings.geoJson.features[item.from],
+            );
+            return {
+                from: item.from,
+                name: property.name,
+                code: property.code,
+            };
+        });
 
     const added = unitMapping
-        .filter((item) => isNotDefined(item.from) && isDefined(item.to));
+        .filter((item) => isNotDefined(item.from) && isDefined(item.to))
+        .map((item) => {
+            const property = getProperty(
+                secondSettings.pointer,
+                secondSettings.geoJson.features[item.to],
+            );
+            return {
+                to: item.to,
+                name: property.name,
+                code: property.code,
+            };
+        });
 
     return (
         <div className={styles.links}>
@@ -66,8 +88,8 @@ function LinkListing(props: LinkListingProps) {
                     <h2>Addition </h2>
                     <div>
                         {added.map((item) => (
-                            <div>
-                                {item.to}
+                            <div key={item.to}>
+                                {`${item.name} (${item.code})`}
                             </div>
                         ))}
                     </div>
@@ -78,8 +100,8 @@ function LinkListing(props: LinkListingProps) {
                     <h2>Deletion</h2>
                     <div>
                         {deleted.map((item) => (
-                            <div>
-                                {item.from}
+                            <div key={item.from}>
+                                {`${item.name} (${item.code})`}
                             </div>
                         ))}
                     </div>
