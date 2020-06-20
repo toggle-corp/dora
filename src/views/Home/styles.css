@@ -25,10 +25,19 @@
 
         .content {
             display: flex;
-            align-items: center;
+            flex-direction: column;
             flex-grow: 1;
-            justify-content: center;
             border: var(--width-separator-thin) solid var(--color-separator);
+            overflow-y: auto;
+
+            .map {
+                flex-shrink: 0;
+            }
+
+            .link-listing {
+                flex-grow: 1;
+                overflow-y: auto;
+            }
         }
     }
 }

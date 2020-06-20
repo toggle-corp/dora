@@ -49,6 +49,7 @@ module.exports = (api) => {
                     'extensions': ['.js', '.jsx', '.ts', '.tsx'],
                     'alias': {
                         '#components': './src/components',
+                        '#re-map': './src/vendor/re-map',
                         '#config': './src/config',
                         '#request': './src/request',
                         '#resources': './resources',

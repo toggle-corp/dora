@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { _cs, isDefined, isNotDefined } from '@togglecorp/fujs';
 
 import Button from '#components/Button';
@@ -14,6 +14,7 @@ import newMuni from '#resources/new-admin2.json';
 
 import AdminLevels from './AdminLevels';
 import Sets from './Sets';
+import Map from './ComparisonMap';
 import {
     AdminLevel,
     AdminSet,
@@ -27,14 +28,28 @@ import {
 
 import styles from './styles.css';
 
+function addUniqueIds(geoJson: GeoJson) {
+    const newFeatures = geoJson.features.map((f, index) => ({
+        ...f,
+        id: index + 1,
+    }));
+
+    return ({
+        ...geoJson,
+        features: newFeatures,
+    });
+}
+
 interface LinkListingProps {
     currentAdminLevel: string;
     data: { [key: string]: Link[] } | undefined;
     firstSet: AdminSet;
     secondSet: AdminSet;
+    className?: string;
 }
 function LinkListing(props: LinkListingProps) {
     const {
+        className,
         currentAdminLevel,
         data,
         firstSet,
@@ -82,7 +97,7 @@ function LinkListing(props: LinkListingProps) {
         });
 
     return (
-        <div className={styles.links}>
+        <div className={_cs(styles.links, className)}>
             {added.length > 0 && (
                 <>
                     <h2>Addition </h2>
@@ -137,7 +152,7 @@ const sets: AdminSet[] = [
             {
                 key: 1,
                 adminLevel: 'country',
-                geoJson: oldCountry as unknown as GeoJson,
+                geoJson: addUniqueIds(oldCountry) as unknown as GeoJson,
                 pointer: {
                     name: 'title',
                     code: 'code',
@@ -148,7 +163,7 @@ const sets: AdminSet[] = [
             {
                 key: 2,
                 adminLevel: 'department',
-                geoJson: oldDepartment as unknown as GeoJson,
+                geoJson: addUniqueIds(oldDepartment) as unknown as GeoJson,
                 pointer: {
                     name: 'title',
                     code: 'code',
@@ -159,7 +174,7 @@ const sets: AdminSet[] = [
             {
                 key: 3,
                 adminLevel: 'municipality',
-                geoJson: oldMuni as unknown as GeoJson,
+                geoJson: addUniqueIds(oldMuni) as unknown as GeoJson,
                 pointer: {
                     name: 'title',
                     code: 'code',
@@ -176,7 +191,7 @@ const sets: AdminSet[] = [
             {
                 key: 4,
                 adminLevel: 'country',
-                geoJson: newCountry as unknown as GeoJson,
+                geoJson: addUniqueIds(newCountry) as unknown as GeoJson,
                 pointer: {
                     name: 'ADM0_ES',
                     code: 'ADM0_PCODE',
@@ -187,7 +202,7 @@ const sets: AdminSet[] = [
             {
                 key: 5,
                 adminLevel: 'department',
-                geoJson: newDepartment as unknown as GeoJson,
+                geoJson: addUniqueIds(newDepartment) as unknown as GeoJson,
                 pointer: {
                     name: 'ADM1_ES',
                     code: 'ADM1_PCODE',
@@ -198,7 +213,7 @@ const sets: AdminSet[] = [
             {
                 key: 6,
                 adminLevel: 'municipality',
-                geoJson: newMuni as unknown as GeoJson,
+                geoJson: addUniqueIds(newMuni) as unknown as GeoJson,
                 pointer: {
                     name: 'ADM2_ES',
                     code: 'ADM2_PCODE',
@@ -225,6 +240,13 @@ function Home(props: Props) {
 
     const firstSet = sets[0];
     const secondSet = sets[1];
+    const oldSource = useMemo(() => (
+        firstSet.settings.find((s) => s.adminLevel === currentAdminLevel)?.geoJson
+    ), [currentAdminLevel]);
+
+    const newSource = useMemo(() => (
+        secondSet.settings.find((s) => s.adminLevel === currentAdminLevel)?.geoJson
+    ), [currentAdminLevel]);
 
     const handleCalculate = useCallback(
         () => {
@@ -259,7 +281,13 @@ function Home(props: Props) {
                     onChange={setCurrentAdminLevel}
                 />
                 <div className={styles.content}>
+                    <Map
+                        className={styles.map}
+                        oldSource={oldSource}
+                        newSource={newSource}
+                    />
                     <LinkListing
+                        className={styles.linkListing}
                         data={mapping}
                         currentAdminLevel={currentAdminLevel}
                         firstSet={firstSet}
