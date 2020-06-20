@@ -3,12 +3,12 @@ import { _cs } from '@togglecorp/fujs';
 
 import SegmentInput from '#components/SegmentInput';
 
-import oldCountry from '#resources/geojsons/admin0.json';
-import oldDepartment from '#resources/geojsons/admin1.json';
-import oldMuni from '#resources/geojsons/admin2.json';
-import newCountry from '#resources/geojsons/new-admin0.json';
-import newDepartment from '#resources/geojsons/new-admin1.json';
-import newMuni from '#resources/geojsons/new-admin2.json';
+import oldCountry from '#resources/admin0.json';
+import oldDepartment from '#resources/admin1.json';
+import oldMuni from '#resources/admin2.json';
+import newCountry from '#resources/new-admin0.json';
+import newDepartment from '#resources/new-admin1.json';
+import newMuni from '#resources/new-admin2.json';
 
 import AdminLevels from './AdminLevels';
 import Sets from './Sets';
@@ -41,6 +41,7 @@ const adminLevels: AdminLevel[] = [
 
 const sets: AdminSet[] = [
     {
+        key: 'old-colombia',
         title: 'Old Colombia',
         adminLevels: [
             {
@@ -61,6 +62,7 @@ const sets: AdminSet[] = [
         ],
     },
     {
+        key: 'new-colombia',
         title: 'New Colombia',
         adminLevels: [
             {

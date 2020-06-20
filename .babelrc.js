@@ -51,7 +51,7 @@ module.exports = (api) => {
                         '#components': './src/components',
                         '#config': './src/config',
                         '#request': './src/request',
-                        '#resources': './src/resources',
+                        '#resources': './resources',
                         '#schema': './src/schema',
                         '#ts': './src/ts',
                         '#utils': './src/utils',

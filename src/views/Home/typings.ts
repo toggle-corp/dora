@@ -11,6 +11,7 @@ export interface SetAdminLevel {
 }
 
 export interface AdminSet {
+    key: string;
     title: string;
     adminLevels: SetAdminLevel[];
 }

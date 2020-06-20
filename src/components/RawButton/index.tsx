@@ -39,7 +39,7 @@ function RawButton(props: Props) {
             ref={elementRef}
             type="button"
             className={_cs(className, styles.rawButton)}
-            onClick={onClick ? handleClick : undefined}
+            onClick={handleClick}
             {...otherProps}
         />
     );

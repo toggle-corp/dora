@@ -29,13 +29,19 @@ function Sets(props: Props) {
             </div>
             <div className={styles.setsList}>
                 {sets.map((set) => (
-                    <div className={styles.set}>
+                    <div
+                        className={styles.set}
+                        key={set.key}
+                    >
                         <h5 className={styles.setTitle}>
                             {set.title}
                         </h5>
                         <div className={styles.adminLevelsList}>
                             {set.adminLevels.map((level) => (
-                                <div className={styles.setAdminLevel}>
+                                <div
+                                    key={level.key}
+                                    className={styles.setAdminLevel}
+                                >
                                     <span className={styles.marker} />
                                     <div className={styles.adminLevelTitle}>
                                         {adminLevelMap[level.adminLevel].title}

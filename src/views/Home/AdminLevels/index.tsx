@@ -22,7 +22,10 @@ function AdminLevels(props: Props) {
             </div>
             <div className={styles.adminLevelsList}>
                 {adminLevels.map((ad) => (
-                    <div className={styles.adminLevel}>
+                    <div
+                        key={ad.key}
+                        className={styles.adminLevel}
+                    >
                         <span className={styles.marker} />
                         <div className={styles.adminLevelTitle}>
                             {ad.title}
