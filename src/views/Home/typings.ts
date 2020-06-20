@@ -1,14 +1,23 @@
 export type Code = string | number;
 
+export interface Pointer {
+    code: Code | undefined;
+    parentCode: string | undefined;
+    name: Code | undefined;
+    // parentName: string | undefined;
+}
+
+export interface GeoJsonFeature {
+    type: string;
+    properties: Record<string, unknown>;
+    geometry: unknown;
+}
+
 // We should use one from mapbox
 export interface GeoJson {
     type: string;
     crs?: unknown;
-    features: {
-        type: string;
-        properties: Record<string, unknown>;
-        geometry: unknown;
-    }[];
+    features: GeoJsonFeature[];
 }
 
 export interface AdminLevel {
@@ -22,12 +31,7 @@ export interface Settings {
     geoJson: GeoJson;
     adminLevel: string;
 
-    pointer: {
-        code: Code | undefined;
-        parentCode: string | undefined;
-        name: Code | undefined;
-        // parentName: string | undefined;
-    };
+    pointer: Pointer;
 }
 
 export interface AdminSet {
