@@ -6,15 +6,20 @@ import {
     AdminLevel,
 } from './typings';
 
-interface TransformedGeoJson {
+interface Property {
     index: number;
     code?: Code;
     name?: string;
     parentCode?: Code;
     // parentName?: string;
 }
+interface Error {
+    title: string;
+    severity: 'error' | 'warning';
+    description?: string;
+}
 
-function getTransformedGeoJson(settings: Settings) {
+function getProperties(settings: Settings) {
     const {
         geoJson,
         pointer,
@@ -39,16 +44,20 @@ function getTransformedGeoJson(settings: Settings) {
     }));
 }
 
-function validateSettings(settings: Settings, root = false) {
+function validateSettings(settings: Settings, root = false): Error[] {
     function getErrors(
-        geo: TransformedGeoJson[],
-        id: keyof TransformedGeoJson,
+        geo: Property[],
+        id: keyof Property,
         checkDuplicates = false,
-    ) {
-        const errors: string[] = [];
+    ): Error[] {
+        const errors: Error[] = [];
         const empty = geo.filter((item) => isNotDefined(item[id]));
         if (empty.length > 0) {
-            errors.push(`'${id}' not defined for ${empty.length} items: ${empty.map((item) => item.index).join(', ')}`);
+            errors.push({
+                title: `'${id}' not defined for ${empty.length} items`,
+                description: `Index: ${empty.map((item) => item.index).join(', ')}`,
+                severity: 'error',
+            });
         }
 
         if (checkDuplicates) {
@@ -57,19 +66,23 @@ function validateSettings(settings: Settings, root = false) {
                 (item) => item,
             );
             if (duplicates.length > 0) {
-                errors.push(`'${id}' has duplicates for ${duplicates.length} items: ${duplicates.join(',')}`);
+                errors.push({
+                    title: `'${id}' has duplicates for ${duplicates.length} items`,
+                    description: `Code: ${duplicates.join(',')}`,
+                    severity: 'error',
+                });
             }
         }
         return errors;
     }
 
 
-    const transformedGeoJson = getTransformedGeoJson(settings);
+    const properties = getProperties(settings);
 
-    const codeErrors = getErrors(transformedGeoJson, 'code', true);
-    const nameErrors = getErrors(transformedGeoJson, 'name');
-    const parentCodeErrors = root ? [] : getErrors(transformedGeoJson, 'parentCode');
-    // const parentNameErrors = root ? [] : getErrors(transformedGeoJson, 'parentName');
+    const codeErrors = getErrors(properties, 'code', true);
+    const nameErrors = getErrors(properties, 'name');
+    const parentCodeErrors = root ? [] : getErrors(properties, 'parentCode');
+    // const parentNameErrors = root ? [] : getErrors(properties, 'parentName');
 
     return [
         ...codeErrors,
@@ -78,41 +91,50 @@ function validateSettings(settings: Settings, root = false) {
         // ...parentNameErrors,
     ];
 }
-function validateSettingsRelation(parent: Settings, child: Settings) {
-    const errors: string[] = [];
-    const transformedParentGeoJsons = getTransformedGeoJson(parent);
-    const temp = transformedParentGeoJsons
-        .map((item) => item.code)
-        .filter(isDefined);
-    const parentCodes = new Set(temp);
+function validateSettingsRelation(parent: Settings, child: Settings): Error[] {
+    const errors: Error[] = [];
 
-    const transformedGeoJsons = getTransformedGeoJson(child);
-    const badChildren = transformedGeoJsons
-        .filter((item) => isDefined(item.parentCode) && !parentCodes.has(item.parentCode));
+    const parentProperties = getProperties(parent);
+    const parentCodes = new Set(
+        parentProperties
+            .map((item) => item.code)
+            .filter(isDefined),
+    );
+
+    const childProperties = getProperties(child);
+
+    const badChildren = childProperties.filter(
+        (item) => isDefined(item.parentCode) && !parentCodes.has(item.parentCode),
+    );
     if (badChildren.length > 0) {
-        errors.push(`Parents not matching for for ${badChildren.length} items: ${badChildren.map((item) => item.index).join(', ')}`);
+        errors.push({
+            title: `Parents not matching for ${badChildren.length} items.`,
+            description: `Index: ${badChildren.map((item) => item.index).join(', ')}`,
+            severity: 'error',
+        });
     }
     return errors;
 }
 
 // eslint-disable-next-line import/prefer-default-export
-export function validate(adminLevels: AdminLevel[], set: Settings[]) {
+export function validate(adminLevels: AdminLevel[], settingsCollection: Settings[]) {
     const errorMapping: {
-        [key: string]: string[];
+        [key: string]: Error[];
     } = listToMap(
         adminLevels,
         (adminLevel) => adminLevel.key,
         () => [],
     );
 
-    set.forEach((settings, index) => {
+    settingsCollection.forEach((settings, index) => {
+        // FIXME: better way to identify root
         const errors = validateSettings(settings, index === 0);
         if (errors.length > 0) {
             errorMapping[settings.adminLevel].push(...errors);
         }
     });
-    set.forEach((settings, index) => {
-        const parentSettings = set[index - 1];
+    settingsCollection.forEach((settings, index) => {
+        const parentSettings = settingsCollection[index - 1];
         if (!parentSettings) {
             return;
         }
