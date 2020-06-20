@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { _cs } from '@togglecorp/fujs';
+import { _cs, isDefined, isNotDefined } from '@togglecorp/fujs';
 
 import Button from '#components/Button';
 import SegmentInput from '#components/SegmentInput';
@@ -20,10 +20,74 @@ import {
     GeoJson,
 } from './typings';
 import {
+    getProperty,
     generateMapping,
+    Link,
 } from './utils';
 
 import styles from './styles.css';
+
+interface LinkListingProps {
+    currentAdminLevel: string;
+    data: { [key: string]: Link[] } | undefined;
+    firstSet: AdminSet;
+    secondSet: AdminSet;
+}
+function LinkListing(props: LinkListingProps) {
+    const {
+        currentAdminLevel,
+        data,
+        firstSet,
+        secondSet,
+    } = props;
+
+    if (!data) {
+        return null;
+    }
+
+    const unitMapping = data[currentAdminLevel];
+    const firstSettings = firstSet.settings.find((item) => item.adminLevel === currentAdminLevel);
+    const secondSettings = secondSet.settings.find((item) => item.adminLevel === currentAdminLevel);
+    // This is an error case
+    if (!unitMapping || !firstSettings || !secondSettings) {
+        return null;
+    }
+
+    const deleted = unitMapping
+        .filter((item) => isDefined(item.from) && isNotDefined(item.to));
+
+    const added = unitMapping
+        .filter((item) => isNotDefined(item.from) && isDefined(item.to));
+
+    return (
+        <div className={styles.links}>
+            {added.length > 0 && (
+                <>
+                    <h2>Addition </h2>
+                    <div>
+                        {added.map((item) => (
+                            <div>
+                                {item.to}
+                            </div>
+                        ))}
+                    </div>
+                </>
+            )}
+            {deleted.length > 0 && (
+                <>
+                    <h2>Deletion</h2>
+                    <div>
+                        {deleted.map((item) => (
+                            <div>
+                                {item.from}
+                            </div>
+                        ))}
+                    </div>
+                </>
+            )}
+        </div>
+    );
+}
 
 const adminLevels: AdminLevel[] = [
     {
@@ -135,13 +199,17 @@ function Home(props: Props) {
     const { className } = props;
 
     const [currentAdminLevel, setCurrentAdminLevel] = useState(adminLevels[0].key);
+    const [mapping, setMapping] = useState<{ [key: string]: Link[] } | undefined>(undefined);
+
+    const firstSet = sets[0];
+    const secondSet = sets[1];
 
     const handleCalculate = useCallback(
         () => {
-            const mapping = generateMapping(adminLevels, sets[0].settings, sets[1].settings);
-            console.warn(mapping);
+            const newMapping = generateMapping(adminLevels, firstSet.settings, secondSet.settings);
+            setMapping(newMapping);
         },
-        [],
+        [firstSet, secondSet],
     );
 
     return (
@@ -169,7 +237,12 @@ function Home(props: Props) {
                     onChange={setCurrentAdminLevel}
                 />
                 <div className={styles.content}>
-                    Main Content
+                    <LinkListing
+                        data={mapping}
+                        currentAdminLevel={currentAdminLevel}
+                        firstSet={firstSet}
+                        secondSet={secondSet}
+                    />
                 </div>
             </div>
         </div>

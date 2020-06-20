@@ -4,6 +4,8 @@ import {
     Settings,
     Code,
     AdminLevel,
+    Pointer,
+    GeoJsonFeature,
 } from './typings';
 
 interface Property {
@@ -19,14 +21,8 @@ interface Error {
     description?: string;
 }
 
-function getProperties(settings: Settings) {
-    const {
-        geoJson,
-        pointer,
-    } = settings;
-
-    return geoJson.features.map((feature, index) => ({
-        index,
+export function getProperty(pointer: Pointer, feature: GeoJsonFeature) {
+    return {
         code: isDefined(pointer.code)
             ? (feature.properties[pointer.code]) as Code | undefined
             : undefined,
@@ -41,6 +37,18 @@ function getProperties(settings: Settings) {
             ? (feature.properties[pointer.parentName]) as string | undefined
             : undefined,
         */
+    };
+}
+
+export function getProperties(settings: Settings) {
+    const {
+        geoJson,
+        pointer,
+    } = settings;
+
+    return geoJson.features.map((feature, index) => ({
+        index,
+        ...getProperty(pointer, feature),
     }));
 }
 
