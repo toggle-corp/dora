@@ -1,3 +1,35 @@
+.set {
+    margin-bottom: var(--spacing-medium);
+    background-color: var(--color-background-card);
+    padding: var(--spacing-medium);
+    overflow-y: auto;
+
+    .set-title {
+        padding: var(--spacing-small) 0;
+    }
+
+    .admin-levels-list {
+        .set-admin-level {
+            display: flex;
+            align-items: baseline;
+            padding: var(--spacing-extra-small) 0;
+
+            .marker {
+                display: block;
+                margin-right: var(--spacing-small);
+                border-radius: 50%;
+                background-color: var(--color-success);
+                width: 10px;
+                height: 10px;
+
+                &.errored {
+                    background-color: var(--color-danger);
+                }
+            }
+        }
+    }
+}
+
 .sets {
     display: flex;
     flex-direction: column;
@@ -5,35 +37,5 @@
 
     .header {
         padding: var(--spacing-small) 0;
-    }
-
-    .sets-list {
-        .set {
-            margin-bottom: var(--spacing-medium);
-            background-color: var(--color-background-card);
-            padding: var(--spacing-medium);
-            overflow-y: auto;
-
-            .set-title {
-                padding: var(--spacing-small) 0;
-            }
-
-            .admin-levels-list {
-                .set-admin-level {
-                    display: flex;
-                    align-items: baseline;
-                    padding: var(--spacing-extra-small) 0;
-
-                    .marker {
-                        display: block;
-                        margin-right: var(--spacing-small);
-                        border-radius: 50%;
-                        background-color: #414141;
-                        width: 10px;
-                        height: 10px;
-                    }
-                }
-            }
-        }
     }
 }
