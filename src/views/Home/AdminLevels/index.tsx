@@ -4,6 +4,24 @@ import { _cs } from '@togglecorp/fujs';
 import { AdminLevel } from '../typings';
 import styles from './styles.css';
 
+interface AdminLevelProps {
+    data: AdminLevel;
+}
+
+function AdminLevelItem(props: AdminLevelProps) {
+    const { data } = props;
+    return (
+        <div
+            className={styles.adminLevel}
+        >
+            <span className={styles.marker} />
+            <div>
+                {data.name}
+            </div>
+        </div>
+    );
+}
+
 interface Props {
     className?: string;
     adminLevels: AdminLevel[];
@@ -22,15 +40,10 @@ function AdminLevels(props: Props) {
             </div>
             <div className={styles.adminLevelsList}>
                 {adminLevels.map((ad) => (
-                    <div
+                    <AdminLevelItem
                         key={ad.key}
-                        className={styles.adminLevel}
-                    >
-                        <span className={styles.marker} />
-                        <div className={styles.adminLevelTitle}>
-                            {ad.name}
-                        </div>
-                    </div>
+                        data={ad}
+                    />
                 ))}
             </div>
         </div>

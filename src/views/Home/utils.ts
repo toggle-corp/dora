@@ -44,6 +44,7 @@ function getProperties(settings: Settings) {
     }));
 }
 
+// NOTE: No need to validate parentCode validation for `root`
 function validateSettings(settings: Settings, root = false): Error[] {
     function getErrors(
         geo: Property[],
@@ -108,7 +109,7 @@ function validateSettingsRelation(parent: Settings, child: Settings): Error[] {
     );
     if (badChildren.length > 0) {
         errors.push({
-            title: `Parents not matching for ${badChildren.length} items.`,
+            title: `'parentCode' not valid for ${badChildren.length} items.`,
             description: `Index: ${badChildren.map((item) => item.index).join(', ')}`,
             severity: 'error',
         });
