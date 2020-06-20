@@ -1,41 +1,41 @@
 import React, { useState } from 'react';
-import { _cs } from '@togglecorp/fujs';
+import { _cs, isDefined, getDuplicates, isNotDefined, listToMap } from '@togglecorp/fujs';
 
 import SegmentInput from '#components/SegmentInput';
 
 import oldCountry from '#resources/admin0.json';
 import oldDepartment from '#resources/admin1.json';
 import oldMuni from '#resources/admin2.json';
+
 import newCountry from '#resources/new-admin0.json';
 import newDepartment from '#resources/new-admin1.json';
 import newMuni from '#resources/new-admin2.json';
 
 import AdminLevels from './AdminLevels';
 import Sets from './Sets';
-
-import { AdminLevel, AdminSet } from './typings';
+import {
+    AdminLevel,
+    AdminSet,
+    GeoJson,
+} from './typings';
 
 import styles from './styles.css';
 
-interface Props {
-    className?: string;
-}
-
 const adminLevels: AdminLevel[] = [
     {
-        key: 0,
-        adminLevel: 0,
-        title: 'Country',
+        key: 'country',
+        name: 'Country',
+        level: 0,
     },
     {
-        key: 1,
-        adminLevel: 1,
-        title: 'Departments',
+        key: 'department',
+        name: 'Department',
+        level: 1,
     },
     {
-        key: 2,
-        adminLevel: 2,
-        title: 'Municipalities',
+        key: 'municipality',
+        name: 'Municipality',
+        level: 2,
     },
 ];
 
@@ -43,54 +43,94 @@ const sets: AdminSet[] = [
     {
         key: 'old-colombia',
         title: 'Old Colombia',
-        adminLevels: [
+        settings: [
             {
                 key: 1,
-                adminLevel: 0,
-                geojson: oldCountry,
+                adminLevel: 'country',
+                geoJson: oldCountry as unknown as GeoJson,
+                pointer: {
+                    name: 'title',
+                    code: 'code',
+                    parentCode: undefined,
+                    // parentName: undefined,
+                },
             },
             {
                 key: 2,
-                adminLevel: 1,
-                geojson: oldDepartment,
+                adminLevel: 'department',
+                geoJson: oldDepartment as unknown as GeoJson,
+                pointer: {
+                    name: 'title',
+                    code: 'code',
+                    parentCode: 'parent',
+                    // parentName: undefined,
+                },
             },
             {
                 key: 3,
-                adminLevel: 2,
-                geojson: oldMuni,
+                adminLevel: 'municipality',
+                geoJson: oldMuni as unknown as GeoJson,
+                pointer: {
+                    name: 'title',
+                    code: 'code',
+                    parentCode: 'parent',
+                    // parentName: undefined,
+                },
             },
         ],
     },
     {
         key: 'new-colombia',
         title: 'New Colombia',
-        adminLevels: [
+        settings: [
             {
                 key: 4,
-                adminLevel: 0,
-                geojson: newCountry,
+                adminLevel: 'country',
+                geoJson: newCountry as unknown as GeoJson,
+                pointer: {
+                    name: 'ADM0_ES',
+                    code: 'ADM0_PCODE',
+                    parentCode: undefined,
+                    // parentName: undefined,
+                },
             },
             {
                 key: 5,
-                adminLevel: 1,
-                geojson: newDepartment,
+                adminLevel: 'department',
+                geoJson: newDepartment as unknown as GeoJson,
+                pointer: {
+                    name: 'ADM1_ES',
+                    code: 'ADM1_PCODE',
+                    parentCode: 'ADM0_PCODE',
+                    // parentName: undefined,
+                },
             },
             {
                 key: 6,
-                adminLevel: 2,
-                geojson: newMuni,
+                adminLevel: 'municipality',
+                geoJson: newMuni as unknown as GeoJson,
+                pointer: {
+                    name: 'ADM2_ES',
+                    code: 'ADM2_PCODE',
+                    parentCode: 'ADM1_PCODE',
+                    // parentName: undefined,
+                },
             },
         ],
     },
 ];
 
 const optionKeySelector = (d: AdminLevel) => d.key;
-const optionLabelSelector = (d: AdminLevel) => d.title;
+const optionLabelSelector = (d: AdminLevel) => d.name;
 
-const Home = (props: Props) => {
+interface Props {
+    className?: string;
+}
+
+function Home(props: Props) {
     const { className } = props;
 
-    const [currentAdminLevel, setCurrentAdminLevel] = useState<AdminLevel['key']>(0);
+    const [currentAdminLevel, setCurrentAdminLevel] = useState(adminLevels[0].key);
 
     return (
         <div className={_cs(className, styles.home)}>
@@ -116,6 +156,6 @@ const Home = (props: Props) => {
             </div>
         </div>
     );
-};
+}
 
 export default Home;

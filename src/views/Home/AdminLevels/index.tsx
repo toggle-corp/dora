@@ -28,7 +28,7 @@ function AdminLevels(props: Props) {
                     >
                         <span className={styles.marker} />
                         <div className={styles.adminLevelTitle}>
-                            {ad.title}
+                            {ad.name}
                         </div>
                     </div>
                 ))}

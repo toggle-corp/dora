@@ -5,6 +5,7 @@ import {
 } from '@togglecorp/fujs';
 
 import { AdminLevel, AdminSet } from '../typings';
+// import { validate } from '../utils';
 import styles from './styles.css';
 
 interface Props {
@@ -20,7 +21,11 @@ function Sets(props: Props) {
         adminLevels,
     } = props;
 
-    const adminLevelMap = listToMap(adminLevels, (d) => d.adminLevel, (d) => d);
+    const adminLevelMap = listToMap(
+        adminLevels,
+        (d) => d.key,
+        (d) => d,
+    );
 
     return (
         <div className={_cs(styles.sets, className)}>
@@ -37,15 +42,15 @@ function Sets(props: Props) {
                             {set.title}
                         </h5>
                         <div className={styles.adminLevelsList}>
-                            {set.adminLevels.map((level) => (
+                            {set.settings.map((setting) => (
                                 <div
-                                    key={level.key}
+                                    key={setting.key}
                                     className={styles.setAdminLevel}
                                 >
                                     <span className={styles.marker} />
                                     <div className={styles.adminLevelTitle}>
-                                        {adminLevelMap[level.adminLevel].title}
-                                        {` (${level.geojson?.features?.length})`}
+                                        {adminLevelMap[setting.adminLevel].name}
+                                        {` (${setting.geoJson.features.length})`}
                                     </div>
                                 </div>
                             ))}

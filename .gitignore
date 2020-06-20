@@ -2,9 +2,6 @@
 
 # dependencies
 /node_modules
-vendor/
-src/public/
-generated/
 /.pnp
 .pnp.js
 
@@ -30,4 +27,5 @@ yarn-error.log*
 *.bak
 *.swp
 
-resources/
+/resources
+/src/vendor

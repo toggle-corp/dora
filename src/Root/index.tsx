@@ -2,13 +2,10 @@ import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 
-interface Props {
-}
-
-function Root(props: Props) {
+function Root() {
     return (
         <BrowserRouter>
-            <App {...props} />
+            <App />
         </BrowserRouter>
     );
 }
