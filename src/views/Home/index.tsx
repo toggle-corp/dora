@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { _cs, isDefined, getDuplicates, isNotDefined, listToMap } from '@togglecorp/fujs';
+import React, { useState, useCallback } from 'react';
+import { _cs } from '@togglecorp/fujs';
 
+import Button from '#components/Button';
 import SegmentInput from '#components/SegmentInput';
 
 import oldCountry from '#resources/admin0.json';
@@ -18,6 +19,9 @@ import {
     AdminSet,
     GeoJson,
 } from './typings';
+import {
+    generateMapping,
+} from './utils';
 
 import styles from './styles.css';
 
@@ -132,6 +136,14 @@ function Home(props: Props) {
 
     const [currentAdminLevel, setCurrentAdminLevel] = useState(adminLevels[0].key);
 
+    const handleCalculate = useCallback(
+        () => {
+            const mapping = generateMapping(adminLevels, sets[0].settings, sets[1].settings);
+            console.warn(mapping);
+        },
+        [],
+    );
+
     return (
         <div className={_cs(className, styles.home)}>
             <div className={styles.sidebar}>
@@ -140,6 +152,12 @@ function Home(props: Props) {
                     adminLevels={adminLevels}
                     sets={sets}
                 />
+                <Button
+                    onClick={handleCalculate}
+                    variant="primary"
+                >
+                    Calculate
+                </Button>
             </div>
             <div className={styles.mainContent}>
                 <SegmentInput

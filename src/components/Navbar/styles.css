@@ -10,7 +10,7 @@
         padding: var(--spacing-small) var(--spacing-medium);
         text-transform: uppercase;
         text-decoration: none;
-        color: var(--color-accent);
+        color: var(--color-primary);
         font-size: var(--font-size-large);
         font-weight: var(--font-weight-bold);
     }

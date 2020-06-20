@@ -12,8 +12,8 @@
     }
 
     &.active {
-        border-bottom-color: var(--color-accent);
-        color: var(--color-accent);
+        border-bottom-color: var(--color-primary);
+        color: var(--color-primary);
     }
 
     &:hover {

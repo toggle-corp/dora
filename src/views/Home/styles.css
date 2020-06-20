@@ -4,7 +4,7 @@
 
 .home {
     display: flex;
-    background-color: var(--color-background-alt);
+    background-color: var(--color-background);
     height: var(--height-content);
 
     .sidebar {

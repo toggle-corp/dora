@@ -39,10 +39,10 @@
     }
 
     &:focus-within {
-        border-bottom-color: var(--color-accent);
+        border-bottom-color: var(--color-primary);
 
         .label {
-            color: var(--color-accent);
+            color: var(--color-primary);
         }
     }
 }
