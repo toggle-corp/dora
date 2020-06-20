@@ -28,6 +28,18 @@ import {
 
 import styles from './styles.css';
 
+function addUniqueIds(geoJson: GeoJson) {
+    const newFeatures = geoJson.features.map((f, index) => ({
+        ...f,
+        id: index + 1,
+    }));
+
+    return ({
+        ...geoJson,
+        features: newFeatures,
+    });
+}
+
 interface LinkListingProps {
     currentAdminLevel: string;
     data: { [key: string]: Link[] } | undefined;
@@ -140,7 +152,7 @@ const sets: AdminSet[] = [
             {
                 key: 1,
                 adminLevel: 'country',
-                geoJson: oldCountry as unknown as GeoJson,
+                geoJson: addUniqueIds(oldCountry) as unknown as GeoJson,
                 pointer: {
                     name: 'title',
                     code: 'code',
@@ -151,7 +163,7 @@ const sets: AdminSet[] = [
             {
                 key: 2,
                 adminLevel: 'department',
-                geoJson: oldDepartment as unknown as GeoJson,
+                geoJson: addUniqueIds(oldDepartment) as unknown as GeoJson,
                 pointer: {
                     name: 'title',
                     code: 'code',
@@ -162,7 +174,7 @@ const sets: AdminSet[] = [
             {
                 key: 3,
                 adminLevel: 'municipality',
-                geoJson: oldMuni as unknown as GeoJson,
+                geoJson: addUniqueIds(oldMuni) as unknown as GeoJson,
                 pointer: {
                     name: 'title',
                     code: 'code',
@@ -179,7 +191,7 @@ const sets: AdminSet[] = [
             {
                 key: 4,
                 adminLevel: 'country',
-                geoJson: newCountry as unknown as GeoJson,
+                geoJson: addUniqueIds(newCountry) as unknown as GeoJson,
                 pointer: {
                     name: 'ADM0_ES',
                     code: 'ADM0_PCODE',
@@ -190,7 +202,7 @@ const sets: AdminSet[] = [
             {
                 key: 5,
                 adminLevel: 'department',
-                geoJson: newDepartment as unknown as GeoJson,
+                geoJson: addUniqueIds(newDepartment) as unknown as GeoJson,
                 pointer: {
                     name: 'ADM1_ES',
                     code: 'ADM1_PCODE',
@@ -201,7 +213,7 @@ const sets: AdminSet[] = [
             {
                 key: 6,
                 adminLevel: 'municipality',
-                geoJson: newMuni as unknown as GeoJson,
+                geoJson: addUniqueIds(newMuni) as unknown as GeoJson,
                 pointer: {
                     name: 'ADM2_ES',
                     code: 'ADM2_PCODE',

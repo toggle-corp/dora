@@ -28,29 +28,19 @@ const fillPaint: mapboxgl.FillPaint = {
     'fill-opacity': [
         'case',
         ['==', ['feature-state', 'hovered'], true],
-        1,
+        0.09,
         0.06,
     ],
 };
 
 const outlinePaint: mapboxgl.LinePaint = {
-    'line-color': [
-        'case',
-        ['==', ['feature-state', 'hovered'], true],
-        '#786cf4',
-        '#f34236',
-    ],
+    'line-color': '#f34236',
     'line-width': 1,
     'line-opacity': 1,
 };
 
 const newOutlinePaint: mapboxgl.LinePaint = {
-    'line-color': [
-        'case',
-        ['==', ['feature-state', 'hovered'], true],
-        '#786cf4',
-        '#6200ee',
-    ],
+    'line-color': '#6200ee',
     'line-width': 1,
     'line-opacity': 1,
 };
@@ -58,7 +48,7 @@ const newOutlinePaint: mapboxgl.LinePaint = {
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const noOp = () => {};
 
-function MapView(props: Props) {
+function ComparisonMap(props: Props) {
     const {
         className,
         oldSource,
@@ -133,4 +123,4 @@ function MapView(props: Props) {
     );
 }
 
-export default MapView;
+export default ComparisonMap;
