@@ -1,9 +1,25 @@
 :root {
+    --spacing-extra-small: 3px;
     --spacing-small: 6px;
     --spacing-medium: 10px;
     --spacing-large: 16px;
 
-    --color-accent: #18bc9c;
+    --color-accent: #786cf4;
+    --color-background-card: #fafafa;
+    --color-separator: #f0f0f0;
+
+    /* COLOR INPUT */
+    --color-input-background: #dae0e7;
+    --color-input-background-errored: #f1e1e3;
+    --color-input-background-disabled: #e4e9ef;
+    --color-input-actions: #6d798a;
+
+    --color-button-background: #dae0e7;
+    --color-button-background-disabled: #e4e9ef;
+
+
+    --width-separator-thin: 1px;
+    --width-separator-medium: 2px;
 
     --font-size-medium: 16px;
     --font-size-large: 20px;
@@ -11,4 +27,10 @@
     --font-weight-light: 300;
     --font-weight-medium: 400;
     --font-weight-bold: 700;
+
+    /* RADIUS */
+
+    --radius-button: 4px;
+    --radius-input: 4px;
+    --radius-modal: 8px;
 }

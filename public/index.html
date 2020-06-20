@@ -13,6 +13,7 @@
             :root {
                 --font-family-sans-serif: 'Spartan', sans-serif;
                 --font-family-monospace: 'Source Code Pro', monospace;
+                --color-background: '#ffffff';
             }
 
             html, body {
@@ -21,15 +22,18 @@
                 font-family: var(--font-family-sans-serif);
             }
 
+            h1, h2, h3, h4, h5 {
+                margin: 0;
+            }
+
             * {
                 box-sizing: border-box;
             }
-
         </style>
 
         <link rel="preconnect" href="https://fonts.googleapis.com">
     </head>
-    <body style="background-color: #f5f5f5;">
+    <body style="background-color: var(--color-background)">
         <noscript>
             Dora needs Javascript.
         </noscript>

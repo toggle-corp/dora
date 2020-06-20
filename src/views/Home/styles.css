@@ -1,9 +1,34 @@
+:root {
+    --width-sidebar: 320px;
+}
+
 .home {
+    display: flex;
     background-color: var(--color-background-alt);
     height: var(--height-content);
 
-    .message {
+    .sidebar {
+        flex-basis: var(--width-sidebar);
+        padding: 0 var(--spacing-medium);
+    }
+
+    .main-content {
         display: flex;
+        flex-basis: calc(100% - var(--width-sidebar));
         flex-direction: column;
+        margin: 0 var(--spacing-medium);
+        overflow-y: auto;
+
+        .tabs {
+            flex-shrink: 0;
+        }
+
+        .content {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            justify-content: center;
+            border: var(--width-separator-thin) solid var(--color-separator);
+        }
     }
 }

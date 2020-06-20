@@ -1,0 +1,22 @@
+.option {
+    border-bottom: var(--width-separator-medium) solid transparent;
+    cursor: pointer;
+    padding: var(--spacing-small) var(--spacing-medium);
+
+    &:not(:last-child) {
+        margin-right: var(--spacing-small);
+    }
+
+    &.disabled {
+        color: var(--color-text-disabled);
+    }
+
+    &.active {
+        border-bottom-color: var(--color-accent);
+        color: var(--color-accent);
+    }
+
+    &:hover {
+        filter: brightness(90%)
+    }
+}

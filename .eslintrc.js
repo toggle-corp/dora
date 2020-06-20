@@ -27,7 +27,7 @@ module.exports = {
                     '#components': './src/components',
                     '#config': './src/config',
                     '#request': './src/request',
-                    '#resources': './src/resources',
+                    '#resources': './resources',
                     '#schema': './src/schema',
                     '#ts': './src/ts',
                     '#utils': './src/utils',
@@ -97,6 +97,7 @@ module.exports = {
 
 
         'react/no-unused-state': 'warn',
+        'react/jsx-props-no-spreading': 'warn',
         'react/default-props-match-prop-types': ['warn', {
             'allowRequiredDefaults': true,
         }],
