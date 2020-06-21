@@ -9,6 +9,7 @@
 
     .sidebar {
         flex-basis: var(--width-sidebar);
+        border-right: var(--width-separator-thin) solid var(--color-separator);
         padding: 0 var(--spacing-medium);
     }
 
@@ -21,13 +22,13 @@
 
         .tabs {
             flex-shrink: 0;
+            margin-bottom: var(--spacing-small);
         }
 
         .content {
             display: flex;
             flex-direction: column;
             flex-grow: 1;
-            border: var(--width-separator-thin) solid var(--color-separator);
             overflow-y: auto;
 
             .map {
