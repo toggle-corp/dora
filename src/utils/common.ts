@@ -24,7 +24,7 @@ export const sanitizeResponse = (data: unknown): any => {
     }
     if (isObject(data)) {
         let newData = {};
-        forEach(data, (k, val) => {
+        forEach(data as Record<string, unknown>, (k, val) => {
             const newEntry = sanitizeResponse(val);
             if (newEntry) {
                 newData = {

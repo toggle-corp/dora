@@ -1,6 +1,8 @@
 .links {
     display: flex;
+    flex-direction: column;
     padding: var(--spacing-medium);
+    overflow-y: auto;
 
     .block {
         display: flex;
@@ -30,6 +32,30 @@
                 &.deleted-item {
                     background-color: var(--color-background-removed-area);
                 }
+            }
+        }
+    }
+
+    .tabs {
+        flex-shrink: 0;
+    }
+
+    .unlinked-content {
+        display: flex;
+        flex-grow: 1;
+        overflow-y: auto;
+    }
+
+    .linked-content {
+        display: flex;
+        flex-grow: 1;
+        overflow-y: auto;
+
+        .block {
+            flex-basis: 100%;
+
+            .item {
+                flex-basis: calc(25% - var(--spacing-medium));
             }
         }
     }

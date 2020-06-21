@@ -60,22 +60,35 @@ function Area(props: AreaProps) {
 
 interface AddedItemProps {
     to: Link['to'];
+    from?: Link['from'];
     name?: string;
+    fromName?: string;
     code?: string | number;
+    fromCode?: string | number;
     feature?: GeoJson;
+    fromFeature?: GeoJson;
     deletedAreas: DeletedItemProps[];
     onAreasLink: (to: number, from: number) => void;
+    onAreasUnlink: (to: number, from: number) => void;
     className?: string;
 }
+
+const optionKeySelector = (d: DeletedItemProps) => d.from;
+const optionLabelSelector = (d: DeletedItemProps) => d.name;
 
 function AddedItem(props: AddedItemProps) {
     const {
         to,
+        from,
+        fromName,
+        fromCode,
+        fromFeature,
         name,
         code,
         feature,
         deletedAreas,
         onAreasLink,
+        onAreasUnlink,
         className,
     } = props;
 
@@ -91,14 +104,21 @@ function AddedItem(props: AddedItemProps) {
     }, [setModalVisibility]);
 
     const handleAreasLink = useCallback(() => {
-        if (to && selectedDeletedArea) {
+        if (isDefined(to) && isDefined(selectedDeletedArea)) {
             onAreasLink(to, selectedDeletedArea);
         }
         setModalVisibility(false);
-    }, [selectedDeletedArea, to]);
+    }, [selectedDeletedArea, to, onAreasLink]);
+
+    const handleAreasUnlink = useCallback(() => {
+        if (isDefined(to) && isDefined(from)) {
+            onAreasUnlink(to, from);
+        }
+        setModalVisibility(false);
+    }, [selectedDeletedArea, to, onAreasUnlink]);
 
     const deletedAreaProperties = useMemo(() => {
-        if (!selectedDeletedArea) {
+        if (isNotDefined(selectedDeletedArea)) {
             return undefined;
         }
         return deletedAreas.find((d) => d.from === selectedDeletedArea);
@@ -115,7 +135,7 @@ function AddedItem(props: AddedItemProps) {
                 transparent
                 onClick={handleLinkButtonClick}
             >
-                Link
+                {isDefined(from) ? 'View' : 'Link'}
             </Button>
             {modalVisibility && (
                 <Modal
@@ -125,13 +145,22 @@ function AddedItem(props: AddedItemProps) {
                     header={<h3>{`Link ${name}`}</h3>}
                     footer={(
                         <div className={styles.modalFooter}>
-                            <Button
-                                variant="primary"
-                                onClick={handleAreasLink}
-                                disabled={isNotDefined(selectedDeletedArea)}
-                            >
-                                Link
-                            </Button>
+                            {isDefined(from) ? (
+                                <Button
+                                    variant="danger"
+                                    onClick={handleAreasUnlink}
+                                >
+                                    Unlink
+                                </Button>
+                            ) : (
+                                <Button
+                                    variant="primary"
+                                    onClick={handleAreasLink}
+                                    disabled={isNotDefined(selectedDeletedArea)}
+                                >
+                                    Link
+                                </Button>
+                            )}
                         </div>
                     )}
                 >
@@ -139,7 +168,7 @@ function AddedItem(props: AddedItemProps) {
                         <div className={styles.heading}>
                             {name}
                         </div>
-                        {feature && to && (
+                        {isDefined(feature) && isDefined(to) && (
                             <Area
                                 code={code}
                                 feature={feature}
@@ -147,22 +176,37 @@ function AddedItem(props: AddedItemProps) {
                             />
                         )}
                     </div>
-                    <div className={styles.deletedAreasContainer}>
-                        <SelectInput
-                            optionKeySelector={(d) => d.from}
-                            optionLabelSelector={(d) => d.name}
-                            options={deletedAreas}
-                            value={selectedDeletedArea}
-                            onChange={setSelectedDeletedArea}
-                        />
-                        {deletedAreaProperties && selectedDeletedArea && (
-                            <Area
-                                code={deletedAreaProperties.code}
-                                feature={deletedAreaProperties.feature}
-                                featureKey={selectedDeletedArea}
+                    {isDefined(from) ? (
+                        <div className={styles.currentLinked}>
+                            <div className={styles.heading}>
+                                {fromName}
+                            </div>
+                            {isDefined(fromFeature) && isDefined(from) && (
+                                <Area
+                                    code={fromCode}
+                                    feature={fromFeature}
+                                    featureKey={from}
+                                />
+                            )}
+                        </div>
+                    ) : (
+                        <div className={styles.deletedAreasContainer}>
+                            <SelectInput
+                                optionKeySelector={optionKeySelector}
+                                optionLabelSelector={optionLabelSelector}
+                                options={deletedAreas}
+                                value={selectedDeletedArea}
+                                onChange={setSelectedDeletedArea}
                             />
-                        )}
-                    </div>
+                            {isDefined(deletedAreaProperties) && isDefined(selectedDeletedArea) && (
+                                <Area
+                                    code={deletedAreaProperties.code}
+                                    feature={deletedAreaProperties.feature}
+                                    featureKey={selectedDeletedArea}
+                                />
+                            )}
+                        </div>
+                    )}
                 </Modal>
             )}
         </div>

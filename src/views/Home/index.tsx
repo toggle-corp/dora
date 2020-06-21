@@ -219,6 +219,35 @@ function Home(props: Props) {
         setMapping(newMapping);
     }, [mapping, setMapping]);
 
+    const handleAreasUnlink = useCallback((to: number, from: number, adminLevel: AdminLevel['key']) => {
+        if (
+            isNotDefined(mapping)
+            || isNotDefined(to)
+            || isNotDefined(from)
+            || isNotDefined(adminLevel)
+        ) {
+            return;
+        }
+        const newMapping = produce(mapping, (safeMapping) => {
+            const currentAdminMapping = safeMapping[adminLevel];
+            const toIndex = currentAdminMapping.findIndex((map) => map.to === to);
+            if (
+                toIndex !== -1
+                && currentAdminMapping[toIndex].from === from
+            ) {
+                // eslint-disable-next-line no-param-reassign
+                safeMapping[adminLevel].splice(toIndex, 1);
+                safeMapping[adminLevel].push({
+                    to,
+                });
+                safeMapping[adminLevel].push({
+                    from,
+                });
+            }
+        });
+        setMapping(newMapping);
+    }, [mapping, setMapping]);
+
     return (
         <div className={_cs(className, styles.home)}>
             <div className={styles.sidebar}>
@@ -257,6 +286,7 @@ function Home(props: Props) {
                         firstSet={firstSet}
                         secondSet={secondSet}
                         onAreasLink={handleAreasLink}
+                        onAreasUnlink={handleAreasUnlink}
                     />
                 </div>
             </div>
