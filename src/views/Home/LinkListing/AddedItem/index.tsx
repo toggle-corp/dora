@@ -126,17 +126,20 @@ function AddedItem(props: AddedItemProps) {
 
     return (
         <div className={_cs(styles.addedItem, className)}>
-            <h5 className={styles.title}>{name}</h5>
+            <header className={styles.header}>
+                <h5 className={styles.title}>{name}</h5>
+                <Button
+                    className={styles.button}
+                    variant="primary"
+                    onClick={handleLinkButtonClick}
+                >
+                    {isDefined(from) ? 'View' : 'Link'}
+                </Button>
+            </header>
             <TextOutput
                 label="Code"
                 value={code}
             />
-            <Button
-                transparent
-                onClick={handleLinkButtonClick}
-            >
-                {isDefined(from) ? 'View' : 'Link'}
-            </Button>
             {modalVisibility && (
                 <Modal
                     className={styles.linkModal}

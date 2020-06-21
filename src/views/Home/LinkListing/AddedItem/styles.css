@@ -1,8 +1,18 @@
 .added-item {
     background-color: var(--color-background-added-area);
 
-    .title {
-        padding: var(--spacing-small);
+    .header {
+        display: flex;
+        align-items: center;
+
+        .title {
+            flex-grow: 1;
+            padding: 0 var(--spacing-small);
+        }
+
+        .button {
+            flex-shrink: 0;
+        }
     }
 }
 

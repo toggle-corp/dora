@@ -6,12 +6,22 @@
 
     .block {
         display: flex;
-        flex-basis: 50%;
+        flex-basis: calc(50% - var(--spacing-medium));
         flex-direction: column;
+        margin: var(--spacing-small) calc(var(--spacing-medium) / 2);
         overflow-y: auto;
+
+        >h2 {
+            margin: 0 calc(var(--spacing-medium) / 2);
+        }
 
         .block-heading {
             flex-shrink: 0;
+        }
+
+        .text-input {
+            margin: 0 calc(var(--spacing-medium) / 2);
+            max-width: 192px;
         }
 
         .block-content {
