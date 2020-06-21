@@ -23,7 +23,8 @@
         "#resources/*": ["./resources/*"],
         "#schema": ["./src/schema"],
         "#re-map": ["./src/vendor/re-map"],
-        "#re-map/*": ["./src/vendor/re-map/*"],
+        "#hooks": ["./src/hooks"],
+        "#hooks/*": ["./src/hooks/*"],
         "#ts": ["./src/ts"],
         "#utils/*": ["./src/utils/*"],
         "#views/*": ["./src/views/*"]

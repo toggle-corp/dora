@@ -153,6 +153,7 @@
     "dependencies": {
         "@togglecorp/fujs": "^1.8.0",
         "@togglecorp/ravl": "^2.0.0",
+        "@turf/area": "^6.0.1",
         "@turf/bbox": "^6.0.1",
         "@turf/buffer": "^5.1.5",
         "@types/mapbox-gl": "^1.10.4",

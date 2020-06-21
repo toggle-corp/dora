@@ -1,0 +1,21 @@
+.text-output {
+    display: table-row;
+
+    .label {
+        display: table-cell;
+        padding: var(--spacing-extra-small) var(--spacing-small);
+        font-size: var(--font-size-small);
+    }
+
+    .value {
+        display: table-cell;
+        padding: var(--spacing-extra-small) var(--spacing-small);
+    }
+
+    .null-value {
+        display: table-cell;
+        padding: 0 var(--spacing-small);
+        color: var(--color-text-disabled);
+        font-size: var(--font-size-small);
+    }
+}

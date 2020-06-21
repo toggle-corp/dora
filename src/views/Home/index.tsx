@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { _cs, isDefined, isNotDefined } from '@togglecorp/fujs';
+import produce from 'immer';
 
 import Button from '#components/Button';
 import SegmentInput from '#components/SegmentInput';
@@ -21,10 +22,11 @@ import {
     GeoJson,
 } from './typings';
 import {
-    getProperty,
     generateMapping,
     Link,
 } from './utils';
+
+import LinkListing from './LinkListing';
 
 import styles from './styles.css';
 
@@ -38,92 +40,6 @@ function addUniqueIds(geoJson: GeoJson) {
         ...geoJson,
         features: newFeatures,
     });
-}
-
-interface LinkListingProps {
-    currentAdminLevel: string;
-    data: { [key: string]: Link[] } | undefined;
-    firstSet: AdminSet;
-    secondSet: AdminSet;
-    className?: string;
-}
-function LinkListing(props: LinkListingProps) {
-    const {
-        className,
-        currentAdminLevel,
-        data,
-        firstSet,
-        secondSet,
-    } = props;
-
-    if (!data) {
-        return null;
-    }
-
-    const unitMapping = data[currentAdminLevel];
-    const firstSettings = firstSet.settings.find((item) => item.adminLevel === currentAdminLevel);
-    const secondSettings = secondSet.settings.find((item) => item.adminLevel === currentAdminLevel);
-    // This is an error case
-    if (!unitMapping || !firstSettings || !secondSettings) {
-        return null;
-    }
-
-    const deleted = unitMapping
-        .filter((item) => isDefined(item.from) && isNotDefined(item.to))
-        .map((item) => {
-            const property = getProperty(
-                firstSettings.pointer,
-                firstSettings.geoJson.features[item.from],
-            );
-            return {
-                from: item.from,
-                name: property.name,
-                code: property.code,
-            };
-        });
-
-    const added = unitMapping
-        .filter((item) => isNotDefined(item.from) && isDefined(item.to))
-        .map((item) => {
-            const property = getProperty(
-                secondSettings.pointer,
-                secondSettings.geoJson.features[item.to],
-            );
-            return {
-                to: item.to,
-                name: property.name,
-                code: property.code,
-            };
-        });
-
-    return (
-        <div className={_cs(styles.links, className)}>
-            {added.length > 0 && (
-                <>
-                    <h2>Addition </h2>
-                    <div>
-                        {added.map((item) => (
-                            <div key={item.to}>
-                                {`${item.name} (${item.code})`}
-                            </div>
-                        ))}
-                    </div>
-                </>
-            )}
-            {deleted.length > 0 && (
-                <>
-                    <h2>Deletion</h2>
-                    <div>
-                        {deleted.map((item) => (
-                            <div key={item.from}>
-                                {`${item.name} (${item.code})`}
-                            </div>
-                        ))}
-                    </div>
-                </>
-            )}
-        </div>
-    );
 }
 
 const adminLevels: AdminLevel[] = [
@@ -274,6 +190,35 @@ function Home(props: Props) {
         }));
     }, [mapping]);
 
+    const handleAreasLink = useCallback((to: number, from: number, adminLevel: AdminLevel['key']) => {
+        if (
+            isNotDefined(mapping)
+            || isNotDefined(to)
+            || isNotDefined(from)
+            || isNotDefined(adminLevel)
+        ) {
+            return;
+        }
+        const newMapping = produce(mapping, (safeMapping) => {
+            const currentAdminMapping = safeMapping[adminLevel];
+            const toIndex = currentAdminMapping.findIndex((map) => map.to === to);
+            if (toIndex !== -1) {
+                // eslint-disable-next-line no-param-reassign
+                safeMapping[adminLevel].splice(toIndex, 1);
+            }
+            const fromIndex = currentAdminMapping.findIndex((map) => map.from === from);
+            if (fromIndex !== -1) {
+                // eslint-disable-next-line no-param-reassign
+                safeMapping[adminLevel].splice(fromIndex, 1);
+            }
+            safeMapping[adminLevel].push({
+                to,
+                from,
+            });
+        });
+        setMapping(newMapping);
+    }, [mapping, setMapping]);
+
     return (
         <div className={_cs(className, styles.home)}>
             <div className={styles.sidebar}>
@@ -307,10 +252,11 @@ function Home(props: Props) {
                     />
                     <LinkListing
                         className={styles.linkListing}
-                        data={mapping}
+                        mapping={mapping}
                         currentAdminLevel={currentAdminLevel}
                         firstSet={firstSet}
                         secondSet={secondSet}
+                        onAreasLink={handleAreasLink}
                     />
                 </div>
             </div>
