@@ -1,12 +1,14 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { _cs, isDefined, isNotDefined } from '@togglecorp/fujs';
 import calculateArea from '@turf/area';
+import bbox from '@turf/bbox';
 
 import TextOutput from '#components/TextOutput';
 import Button from '#components/Button';
 import Modal from '#components/Modal';
 import SelectInput from '#components/SelectInput';
 import AreaMap from '#components/AreaMap';
+import ClickableMap from '#components/ClickableMap';
 
 import {
     AdminLevel,
@@ -22,6 +24,8 @@ import {
 import { DeletedItemProps } from '../index';
 
 import styles from './styles.css';
+
+type BBox = [number, number, number, number];
 
 interface AreaProps {
     feature: GeoJson;
@@ -90,6 +94,7 @@ function AddedItem(props: AddedItemProps) {
         onAreasLink,
         onAreasUnlink,
         className,
+        pointer,
     } = props;
 
     const [modalVisibility, setModalVisibility] = useState(false);
@@ -124,13 +129,17 @@ function AddedItem(props: AddedItemProps) {
         return deletedAreas.find((d) => d.from === selectedDeletedArea);
     }, [selectedDeletedArea, deletedAreas]);
 
+    const bounds: (BBox | undefined) = useMemo(() => (
+        feature ? bbox(feature) : undefined
+    ), [feature]);
+
     return (
         <div className={_cs(styles.addedItem, className)}>
             <header className={styles.header}>
                 <h5 className={styles.title}>{name}</h5>
                 <Button
                     className={styles.button}
-                    variant="primary"
+                    transparent
                     onClick={handleLinkButtonClick}
                 >
                     {isDefined(from) ? 'View' : 'Link'}
@@ -167,18 +176,6 @@ function AddedItem(props: AddedItemProps) {
                         </div>
                     )}
                 >
-                    <div className={styles.currentSelection}>
-                        <div className={styles.heading}>
-                            {name}
-                        </div>
-                        {isDefined(feature) && isDefined(to) && (
-                            <Area
-                                code={code}
-                                feature={feature}
-                                featureKey={to}
-                            />
-                        )}
-                    </div>
                     {isDefined(from) ? (
                         <div className={styles.currentLinked}>
                             <div className={styles.heading}>
@@ -201,15 +198,27 @@ function AddedItem(props: AddedItemProps) {
                                 value={selectedDeletedArea}
                                 onChange={setSelectedDeletedArea}
                             />
-                            {isDefined(deletedAreaProperties) && isDefined(selectedDeletedArea) && (
-                                <Area
-                                    code={deletedAreaProperties.code}
-                                    feature={deletedAreaProperties.feature}
-                                    featureKey={selectedDeletedArea}
-                                />
-                            )}
+                            <ClickableMap
+                                bounds={bounds}
+                                pointer={pointer}
+                                deletedAreas={deletedAreas}
+                                selectedArea={selectedDeletedArea}
+                                onSelectedAreaChange={setSelectedDeletedArea}
+                            />
                         </div>
                     )}
+                    <div className={styles.currentSelection}>
+                        <div className={styles.heading}>
+                            {name}
+                        </div>
+                        {isDefined(feature) && isDefined(to) && (
+                            <Area
+                                code={code}
+                                feature={feature}
+                                featureKey={to}
+                            />
+                        )}
+                    </div>
                 </Modal>
             )}
         </div>

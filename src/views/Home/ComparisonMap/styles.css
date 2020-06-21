@@ -4,6 +4,6 @@
 
     .map-container {
         border-radius: var(--radius-modal);
-        height: 512px;
+        height: 100%;
     }
 }

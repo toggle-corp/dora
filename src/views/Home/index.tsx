@@ -274,7 +274,10 @@ function Home(props: Props) {
                 />
                 <div className={styles.content}>
                     <Map
-                        className={styles.map}
+                        className={_cs(
+                            styles.map,
+                            isNotDefined(mapping) && styles.fullMap,
+                        )}
                         currentAdminLevel={currentAdminLevel}
                         oldSource={oldSource}
                         newSource={newSource}

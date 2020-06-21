@@ -29,10 +29,16 @@
             display: flex;
             flex-direction: column;
             flex-grow: 1;
+            border: var(--width-separator-thin) solid var(--color-separator);
             overflow-y: auto;
 
             .map {
                 flex-shrink: 0;
+                height: 40vh;
+
+                &.full-map {
+                    height: 100%;
+                }
             }
 
             .link-listing {

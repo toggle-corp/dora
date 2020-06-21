@@ -193,14 +193,6 @@ function LinkListing(props: LinkListingProps) {
             .filter((item) => caseInsensitiveSubmatch(item.name, addedSearchText));
     }, [unitMapping, addedSearchText]);
 
-    if (!mapping) {
-        return (
-            <div className={styles.noMapping}>
-                Calcuation not triggered
-            </div>
-        );
-    }
-
     if (!unitMapping || !firstSettings || !secondSettings) {
         return null;
     }
@@ -224,37 +216,15 @@ function LinkListing(props: LinkListingProps) {
                     ) : (
                         <div className={styles.unlinkedContent}>
                             <div className={styles.block}>
-                                <h2>Addition</h2>
-                                <TextInput
-                                    className={styles.textInput}
-                                    placeholder="Search"
-                                    value={addedSearchText}
-                                    onChange={setAddedSearchText}
-                                />
-                                <div className={styles.blockContent}>
-                                    {added.map((item) => (
-                                        <AddedItem
-                                            className={_cs(styles.addedItem, styles.item)}
-                                            key={item.to}
-                                            to={item.to}
-                                            code={item.code}
-                                            name={item.name}
-                                            feature={item.feature}
-                                            deletedAreas={deleted}
-                                            onAreasLink={handleAreasLink}
-                                            onAreasUnlink={handleAreasUnlink}
-                                        />
-                                    ))}
+                                <div className={styles.header}>
+                                    <h2>{firstSet.title}</h2>
+                                    <TextInput
+                                        className={styles.textInput}
+                                        placeholder="Search"
+                                        value={deletedSearchText}
+                                        onChange={setDeletedSearchText}
+                                    />
                                 </div>
-                            </div>
-                            <div className={styles.block}>
-                                <h2>Deletion</h2>
-                                <TextInput
-                                    className={styles.textInput}
-                                    placeholder="Search"
-                                    value={deletedSearchText}
-                                    onChange={setDeletedSearchText}
-                                />
                                 <div className={styles.blockContent}>
                                     {deleted.map((item) => (
                                         <DeletedItem
@@ -266,6 +236,33 @@ function LinkListing(props: LinkListingProps) {
                                     ))}
                                 </div>
                             </div>
+                            <div className={styles.block}>
+                                <div className={styles.header}>
+                                    <h2>{secondSet.title}</h2>
+                                    <TextInput
+                                        className={styles.textInput}
+                                        placeholder="Search"
+                                        value={addedSearchText}
+                                        onChange={setAddedSearchText}
+                                    />
+                                </div>
+                                <div className={styles.blockContent}>
+                                    {added.map((item) => (
+                                        <AddedItem
+                                            className={_cs(styles.addedItem, styles.item)}
+                                            key={item.to}
+                                            to={item.to}
+                                            code={item.code}
+                                            name={item.name}
+                                            feature={item.feature}
+                                            pointer={firstSettings.pointer}
+                                            deletedAreas={deleted}
+                                            onAreasLink={handleAreasLink}
+                                            onAreasUnlink={handleAreasUnlink}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
                         </div>
                     )}
                 </>
@@ -273,12 +270,15 @@ function LinkListing(props: LinkListingProps) {
             {currentTab === 'linked' && (
                 <div className={styles.linkedContent}>
                     <div className={styles.block}>
-                        <TextInput
-                            className={styles.textInput}
-                            placeholder="Search"
-                            value={linkedSearchText}
-                            onChange={setLinkedSearchText}
-                        />
+                        <div className={styles.header}>
+                            <h2>Linked</h2>
+                            <TextInput
+                                className={styles.textInput}
+                                placeholder="Search"
+                                value={linkedSearchText}
+                                onChange={setLinkedSearchText}
+                            />
+                        </div>
                         <div className={styles.blockContent}>
                             {linked.map((item) => (
                                 <AddedItem
