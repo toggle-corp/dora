@@ -9,7 +9,10 @@ import MapSource from '#re-map/MapSource';
 import MapLayer from '#re-map/MapSource/MapLayer';
 import MapBounds from '#re-map/MapBounds';
 
-import { GeoJson } from '../typings';
+import {
+    GeoJson,
+    AdminLevel,
+} from '../typings';
 
 import styles from './styles.css';
 
@@ -19,6 +22,7 @@ interface Props {
     className?: string;
     oldSource?: GeoJson;
     newSource?: GeoJson;
+    currentAdminLevel: AdminLevel['key'];
 }
 
 const lightStyle = 'mapbox://styles/mapbox/light-v10';
@@ -53,6 +57,7 @@ function ComparisonMap(props: Props) {
         className,
         oldSource,
         newSource,
+        currentAdminLevel,
     } = props;
 
     const bounds: (BBox | undefined) = useMemo(() => (
@@ -76,7 +81,7 @@ function ComparisonMap(props: Props) {
                 />
                 {oldSource && (
                     <MapSource
-                        sourceKey="old-source"
+                        sourceKey={`old-source-${currentAdminLevel}`}
                         sourceOptions={{
                             type: 'geojson',
                         }}
@@ -102,7 +107,7 @@ function ComparisonMap(props: Props) {
                 )}
                 {newSource && (
                     <MapSource
-                        sourceKey="new-source"
+                        sourceKey={`new-source-${currentAdminLevel}`}
                         sourceOptions={{
                             type: 'geojson',
                         }}

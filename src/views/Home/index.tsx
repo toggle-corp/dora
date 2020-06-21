@@ -225,8 +225,15 @@ const sets: AdminSet[] = [
     },
 ];
 
-const optionKeySelector = (d: AdminLevel) => d.key;
-const optionLabelSelector = (d: AdminLevel) => d.name;
+interface AdminLevelWithCount extends AdminLevel {
+    count?: number;
+}
+
+const optionKeySelector = (d: AdminLevelWithCount) => d.key;
+
+const optionLabelSelector = (d: AdminLevelWithCount) => (
+    isDefined(d.count) ? `${d.name} (${d.count})` : d.name
+);
 
 interface Props {
     className?: string;
@@ -256,6 +263,17 @@ function Home(props: Props) {
         [firstSet, secondSet],
     );
 
+    const adminLevelsWithCount = useMemo(() => {
+        if (!mapping) {
+            return adminLevels;
+        }
+        return adminLevels.map((level) => ({
+            ...level,
+            count: mapping[level.key]
+                .filter((link) => isNotDefined(link.to) || isNotDefined(link.from)).length,
+        }));
+    }, [mapping]);
+
     return (
         <div className={_cs(className, styles.home)}>
             <div className={styles.sidebar}>
@@ -274,7 +292,7 @@ function Home(props: Props) {
             <div className={styles.mainContent}>
                 <SegmentInput
                     className={styles.tabs}
-                    options={adminLevels}
+                    options={adminLevelsWithCount}
                     optionKeySelector={optionKeySelector}
                     optionLabelSelector={optionLabelSelector}
                     value={currentAdminLevel}
@@ -283,6 +301,7 @@ function Home(props: Props) {
                 <div className={styles.content}>
                     <Map
                         className={styles.map}
+                        currentAdminLevel={currentAdminLevel}
                         oldSource={oldSource}
                         newSource={newSource}
                     />
