@@ -8,31 +8,22 @@ import {
 
 import TextOutput from '#components/TextOutput';
 import TextInput from '#components/TextInput';
-import Button from '#components/Button';
-import Modal from '#components/Modal';
-import SelectInput from '#components/SelectInput';
 import SegmentInput from '#components/SegmentInput';
 
 import {
     AdminLevel,
     AdminSet,
-    GeoJson,
-} from '../typings';
+    DeletedItemProps,
+} from '#typings';
+
 import {
     getProperty,
-    generateMapping,
     Link,
 } from '../utils';
 
 import AddedItem from './AddedItem';
+import LinkUnlinkModal from './LinkUnlinkModal';
 import styles from './styles.css';
-
-export interface DeletedItemProps {
-    from: number;
-    name: string;
-    code?: string | number;
-    feature?: GeoJson;
-}
 
 function DeletedItem(props: DeletedItemProps) {
     const {
@@ -95,6 +86,9 @@ function LinkListing(props: LinkListingProps) {
     } = props;
 
     const [currentTab, setCurrentTab] = useState(tabOptions[0].key);
+    const [selectedAddedArea, setSelectedAddedArea] = useState<number>();
+    const [selectedDeletedArea, setSelectedDeletedArea] = useState<number>();
+    const [modalVisibility, setModalVisibility] = useState(false);
     const [addedSearchText, setAddedSearchText] = useState('');
     const [deletedSearchText, setDeletedSearchText] = useState('');
     const [linkedSearchText, setLinkedSearchText] = useState('');
@@ -106,6 +100,11 @@ function LinkListing(props: LinkListingProps) {
     const handleAreasUnlink = useCallback((to: number, from: number) => {
         onAreasUnlink(to, from, currentAdminLevel);
     }, [currentAdminLevel, onAreasUnlink]);
+
+    const handleSelectedAreaChange = useCallback((addedArea?: number) => {
+        setSelectedAddedArea(addedArea);
+        setModalVisibility(true);
+    }, [setSelectedAddedArea, setModalVisibility]);
 
     const unitMapping = useMemo(() => (
         mapping && mapping[currentAdminLevel]
@@ -149,7 +148,7 @@ function LinkListing(props: LinkListingProps) {
                 caseInsensitiveSubmatch(item.toName, linkedSearchText)
                 || caseInsensitiveSubmatch(item.fromName, linkedSearchText)
             ));
-    }, [unitMapping, linkedSearchText]);
+    }, [unitMapping, linkedSearchText, firstSettings, secondSettings]);
 
     const deleted: DeletedItemProps[] = useMemo(() => {
         if (!unitMapping || !firstSettings || !secondSettings) {
@@ -170,7 +169,7 @@ function LinkListing(props: LinkListingProps) {
                 };
             })
             .filter((item) => caseInsensitiveSubmatch(item.name, deletedSearchText));
-    }, [deletedSearchText, unitMapping]);
+    }, [deletedSearchText, unitMapping, firstSettings, secondSettings]);
 
     const added = useMemo(() => {
         if (!unitMapping || !firstSettings || !secondSettings) {
@@ -191,7 +190,51 @@ function LinkListing(props: LinkListingProps) {
                 };
             })
             .filter((item) => caseInsensitiveSubmatch(item.name, addedSearchText));
-    }, [unitMapping, addedSearchText]);
+    }, [unitMapping, addedSearchText, firstSettings, secondSettings]);
+
+    const handleModalCloseClick = useCallback(() => {
+        setModalVisibility(false);
+        setSelectedAddedArea(undefined);
+        setSelectedDeletedArea(undefined);
+    }, [setModalVisibility]);
+
+    const {
+        to,
+        toFeature,
+        toName,
+        toCode,
+        from,
+        fromFeature,
+        fromName,
+        fromCode,
+    } = useMemo(() => {
+        const addedAreaInLinkedList = linked.find((a) => a.to === selectedAddedArea);
+        const addedAreaInAddedList = added.find((a) => a.to === selectedAddedArea);
+
+        if (isDefined(addedAreaInLinkedList)) {
+            return ({
+                to: selectedAddedArea,
+                toName: addedAreaInLinkedList?.toName,
+                toFeature: addedAreaInLinkedList?.toFeature,
+                toCode: addedAreaInLinkedList?.toCode,
+                from: addedAreaInLinkedList?.from,
+                fromName: addedAreaInLinkedList?.fromName,
+                fromFeature: addedAreaInLinkedList?.fromFeature,
+                fromCode: addedAreaInLinkedList?.fromCode,
+            });
+        }
+
+        return ({
+            to: selectedAddedArea,
+            toName: addedAreaInAddedList?.name,
+            toFeature: addedAreaInAddedList?.feature,
+            toCode: addedAreaInAddedList?.code,
+            from: undefined,
+            fromFeature: undefined,
+            fromName: undefined,
+            fromCode: undefined,
+        });
+    }, [selectedAddedArea, added, linked]);
 
     if (!unitMapping || !firstSettings || !secondSettings) {
         return null;
@@ -249,16 +292,12 @@ function LinkListing(props: LinkListingProps) {
                                 <div className={styles.blockContent}>
                                     {added.map((item) => (
                                         <AddedItem
-                                            className={_cs(styles.addedItem, styles.item)}
+                                            className={styles.item}
                                             key={item.to}
                                             to={item.to}
                                             code={item.code}
                                             name={item.name}
-                                            feature={item.feature}
-                                            pointer={firstSettings.pointer}
-                                            deletedAreas={deleted}
-                                            onAreasLink={handleAreasLink}
-                                            onAreasUnlink={handleAreasUnlink}
+                                            onSelectedAreaChange={handleSelectedAreaChange}
                                         />
                                     ))}
                                 </div>
@@ -282,24 +321,37 @@ function LinkListing(props: LinkListingProps) {
                         <div className={styles.blockContent}>
                             {linked.map((item) => (
                                 <AddedItem
-                                    className={_cs(styles.addedItem, styles.item)}
+                                    className={styles.item}
                                     key={item.to}
                                     to={item.to}
-                                    from={item.from}
-                                    fromCode={item.fromCode}
-                                    fromName={item.fromName}
-                                    fromFeature={item.fromFeature}
                                     code={item.toCode}
                                     name={item.toName}
-                                    feature={item.toFeature}
-                                    deletedAreas={deleted}
-                                    onAreasLink={handleAreasLink}
-                                    onAreasUnlink={handleAreasUnlink}
+                                    from={item.from}
+                                    onSelectedAreaChange={handleSelectedAreaChange}
                                 />
                             ))}
                         </div>
                     </div>
                 </div>
+            )}
+            {(modalVisibility && isDefined(to)) && (
+                <LinkUnlinkModal
+                    to={to}
+                    name={toName}
+                    feature={toFeature}
+                    code={toCode}
+                    from={from}
+                    fromName={fromName}
+                    fromFeature={fromFeature}
+                    fromCode={fromCode}
+                    onModalClose={handleModalCloseClick}
+                    onAreasLink={handleAreasLink}
+                    onAreasUnlink={handleAreasUnlink}
+                    selectedDeletedArea={selectedDeletedArea}
+                    setSelectedDeletedArea={setSelectedDeletedArea}
+                    deletedAreas={deleted}
+                    pointer={secondSettings.pointer}
+                />
             )}
         </div>
     );

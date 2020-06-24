@@ -6,7 +6,7 @@ import {
     AdminLevel,
     Pointer,
     GeoJsonFeature,
-} from './typings';
+} from '#typings';
 
 function getCanonicalName(value: string) {
     return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '');

@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import { _cs } from '@togglecorp/fujs';
 import bbox from '@turf/bbox';
-import buffer from '@turf/buffer';
 
 import Map from '#re-map';
 import MapContainer from '#re-map/MapContainer';
@@ -9,11 +8,7 @@ import MapSource from '#re-map/MapSource';
 import MapLayer from '#re-map/MapSource/MapLayer';
 import MapBounds from '#re-map/MapBounds';
 
-// FIXME: Pull typing from appropriate place
-import {
-    GeoJson,
-    AdminLevel,
-} from '#views/Home/typings';
+import { GeoJson } from '#typings';
 
 import styles from './styles.css';
 
@@ -26,16 +21,6 @@ interface Props {
 }
 
 const lightStyle = 'mapbox://styles/mapbox/light-v10';
-
-const fillPaint: mapboxgl.FillPaint = {
-    'fill-color': '#786cf4',
-    'fill-opacity': [
-        'case',
-        ['==', ['feature-state', 'hovered'], true],
-        0.09,
-        0.06,
-    ],
-};
 
 const outlinePaint: mapboxgl.LinePaint = {
     'line-color': '#f34236',

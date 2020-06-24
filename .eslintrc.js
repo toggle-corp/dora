@@ -30,6 +30,7 @@ module.exports = {
                     '#request': './src/request',
                     '#resources': './resources',
                     '#re-map': './src/vendor/re-map',
+                    '#typings': './src/typings',
                     '#schema': './src/schema',
                     '#ts': './src/ts',
                     '#utils': './src/utils',

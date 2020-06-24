@@ -12,15 +12,15 @@ import oldMuni from '#resources/admin2.json';
 import newCountry from '#resources/new-admin0.json';
 import newDepartment from '#resources/new-admin1.json';
 import newMuni from '#resources/new-admin2.json';
-
-import AdminLevels from './AdminLevels';
-import Sets from './Sets';
-import Map from './ComparisonMap';
 import {
     AdminLevel,
     AdminSet,
     GeoJson,
-} from './typings';
+} from '#typings';
+
+import AdminLevels from './AdminLevels';
+import Sets from './Sets';
+import Map from './ComparisonMap';
 import {
     generateMapping,
     Link,
@@ -165,11 +165,11 @@ function Home(props: Props) {
     const secondSet = sets[1];
     const oldSource = useMemo(() => (
         firstSet.settings.find((s) => s.adminLevel === currentAdminLevel)?.geoJson
-    ), [currentAdminLevel]);
+    ), [currentAdminLevel, firstSet]);
 
     const newSource = useMemo(() => (
         secondSet.settings.find((s) => s.adminLevel === currentAdminLevel)?.geoJson
-    ), [currentAdminLevel]);
+    ), [currentAdminLevel, secondSet]);
 
     const handleCalculate = useCallback(
         () => {

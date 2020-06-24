@@ -22,6 +22,8 @@
         "#resources": ["./resources"],
         "#resources/*": ["./resources/*"],
         "#schema": ["./src/schema"],
+        "#typings": ["./src/typings"],
+        "#typings/*": ["./src/typings/*"],
         "#re-map": ["./src/vendor/re-map"],
         "#re-map/*": ["./src/vendor/re-map/*"],
         "#hooks": ["./src/hooks"],

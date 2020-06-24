@@ -3,7 +3,6 @@ import {
     _cs,
     isDefined,
 } from '@togglecorp/fujs';
-import buffer from '@turf/buffer';
 
 import Map from '#re-map';
 import MapContainer from '#re-map/MapContainer';
@@ -11,20 +10,14 @@ import MapSource from '#re-map/MapSource';
 import MapLayer from '#re-map/MapSource/MapLayer';
 import MapBounds from '#re-map/MapBounds';
 
-// FIXME: Pull typing from appropriate place
 import {
-    GeoJson,
-    AdminLevel,
-} from '#views/Home/typings';
+    DeletedItemProps,
+    Pointer,
+} from '#typings';
 
 import styles from './styles.css';
 
 type BBox = [number, number, number, number];
-
-interface Props {
-    className?: string;
-    bounds: BBox;
-}
 
 const lightStyle = 'mapbox://styles/mapbox/light-v10';
 
@@ -47,6 +40,14 @@ const outlinePaint: mapboxgl.LinePaint = {
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const noOp = () => {};
 
+interface Props {
+    className?: string;
+    bounds: BBox;
+    deletedAreas: DeletedItemProps[];
+    onSelectedAreaChange: (area: number) => void;
+    pointer: Pointer;
+}
+
 function ClickableMap(props: Props) {
     const {
         className,
@@ -61,11 +62,11 @@ function ClickableMap(props: Props) {
         features: deletedAreas.map((da) => da.feature),
     };
     const handleAreaClick = useCallback((feature) => {
-        const selectedArea = deletedAreas.find((da) => da.feature.id === feature.id);
+        const selectedArea = deletedAreas.find((da) => da?.feature?.id === feature.id);
         if (isDefined(selectedArea)) {
             onSelectedAreaChange(selectedArea?.from);
         }
-    }, []);
+    }, [onSelectedAreaChange, deletedAreas]);
 
     const labelLayout: mapboxgl.SymbolLayout = useMemo(() => ({
         'text-field': ['get', pointer.name],
