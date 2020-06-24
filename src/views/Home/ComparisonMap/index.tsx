@@ -12,7 +12,7 @@ import MapBounds from '#re-map/MapBounds';
 import {
     GeoJson,
     AdminLevel,
-} from '../typings';
+} from '#typings';
 
 import styles from './styles.css';
 

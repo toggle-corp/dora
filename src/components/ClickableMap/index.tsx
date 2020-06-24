@@ -12,6 +12,7 @@ import MapBounds from '#re-map/MapBounds';
 
 import {
     DeletedItemProps,
+    LinkedArea,
     Pointer,
 } from '#typings';
 
@@ -22,7 +23,7 @@ type BBox = [number, number, number, number];
 const lightStyle = 'mapbox://styles/mapbox/light-v10';
 
 const fillPaint: mapboxgl.FillPaint = {
-    'fill-color': '#786cf4',
+    'fill-color': '#f34236',
     'fill-opacity': [
         'case',
         ['==', ['feature-state', 'hovered'], true],
@@ -31,8 +32,14 @@ const fillPaint: mapboxgl.FillPaint = {
     ],
 };
 
+const nonClickableOutlinePaint: mapboxgl.LinePaint = {
+    'line-color': '#414141',
+    'line-width': 1,
+    'line-opacity': 1,
+};
+
 const outlinePaint: mapboxgl.LinePaint = {
-    'line-color': '#786cf4',
+    'line-color': '#f34236',
     'line-width': 1,
     'line-opacity': 1,
 };
@@ -44,6 +51,7 @@ interface Props {
     className?: string;
     bounds: BBox;
     deletedAreas: DeletedItemProps[];
+    linkedAreas: LinkedArea[];
     onSelectedAreaChange: (area: number) => void;
     pointer: Pointer;
 }
@@ -53,6 +61,7 @@ function ClickableMap(props: Props) {
         className,
         bounds,
         deletedAreas,
+        linkedAreas,
         onSelectedAreaChange,
         pointer,
     } = props;
@@ -61,6 +70,12 @@ function ClickableMap(props: Props) {
         type: 'FeatureCollection',
         features: deletedAreas.map((da) => da.feature),
     };
+
+    const linkedCollection = {
+        type: 'FeatureCollection',
+        features: linkedAreas?.map((da) => da.fromFeature),
+    };
+
     const handleAreaClick = useCallback((feature) => {
         const selectedArea = deletedAreas.find((da) => da?.feature?.id === feature.id);
         if (isDefined(selectedArea)) {
@@ -124,6 +139,32 @@ function ClickableMap(props: Props) {
                                 layout: labelLayout,
                             }}
                             onClick={handleAreaClick}
+                        />
+                    </MapSource>
+                )}
+                {linkedAreas && (
+                    <MapSource
+                        sourceKey="non-clickable-source"
+                        sourceOptions={{
+                            type: 'geojson',
+                        }}
+                        geoJson={linkedCollection}
+                    >
+                        <MapLayer
+                            layerKey="non-clickable-outline"
+                            onMouseEnter={noOp}
+                            layerOptions={{
+                                type: 'line',
+                                paint: nonClickableOutlinePaint,
+                            }}
+                        />
+                        <MapLayer
+                            layerKey="non-clickable-label"
+                            onMouseEnter={noOp}
+                            layerOptions={{
+                                type: 'symbol',
+                                layout: labelLayout,
+                            }}
                         />
                     </MapSource>
                 )}

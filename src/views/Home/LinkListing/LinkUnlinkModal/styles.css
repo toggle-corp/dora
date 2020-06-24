@@ -1,3 +1,7 @@
+.properties-container {
+    padding: var(--spacing-medium) 0;
+}
+
 .link-modal {
     display: flex;
     flex-direction: column;
@@ -20,29 +24,18 @@
 
         .current-selection {
             flex-basis: 50%;
+            border-left: var(--width-separator-thin) solid var(--color-separator);
             padding: var(--spacing-small);
         }
 
         .current-linked {
             flex-basis: 50%;
-            border-left: var(--width-separator-thin) solid var(--color-separator);
             padding: var(--spacing-small);
         }
 
         .deleted-areas-container {
             flex-basis: 50%;
-            border-left: var(--width-separator-thin) solid var(--color-separator);
             padding: var(--spacing-small);
-        }
-
-        .area {
-            .sub-heading {
-                padding: var(--spacing-medium) 0;
-            }
-
-            .properties-container {
-                padding: var(--spacing-medium) 0;
-            }
         }
     }
 

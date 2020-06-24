@@ -8,7 +8,11 @@ import MapSource from '#re-map/MapSource';
 import MapLayer from '#re-map/MapSource/MapLayer';
 import MapBounds from '#re-map/MapBounds';
 
-import { GeoJson } from '#typings';
+import {
+    Pointer,
+    GeoJson,
+    LinkedArea,
+} from '#typings';
 
 import styles from './styles.css';
 
@@ -18,12 +22,27 @@ interface Props {
     className?: string;
     feature?: GeoJson;
     featureKey: string | number;
+    linkedAreas?: LinkedArea[];
+    pointer?: Pointer;
+    isDeleted: boolean;
 }
 
 const lightStyle = 'mapbox://styles/mapbox/light-v10';
 
-const outlinePaint: mapboxgl.LinePaint = {
+const nonClickableOutlinePaint: mapboxgl.LinePaint = {
+    'line-color': '#414141',
+    'line-width': 1,
+    'line-opacity': 1,
+};
+
+const redOutlinePaint: mapboxgl.LinePaint = {
     'line-color': '#f34236',
+    'line-width': 1,
+    'line-opacity': 1,
+};
+
+const blueOutlinePaint: mapboxgl.LinePaint = {
+    'line-color': '#6200ee',
     'line-width': 1,
     'line-opacity': 1,
 };
@@ -36,11 +55,27 @@ function AreaMap(props: Props) {
         className,
         feature,
         featureKey,
+        linkedAreas,
+        isDeleted,
+        pointer,
     } = props;
 
     const bounds: (BBox | undefined) = useMemo(() => (
         feature ? bbox(feature) : undefined
     ), [feature]);
+
+    const linkedCollection = {
+        type: 'FeatureCollection',
+        features: linkedAreas?.map((da) => (isDeleted ? da.fromFeature : da.toFeature)),
+    };
+
+    const labelLayout: mapboxgl.SymbolLayout = useMemo(() => ({
+        'text-field': ['get', pointer?.name],
+        'text-size': 14,
+        'text-justify': 'center',
+        'text-anchor': 'center',
+        'text-padding': 0,
+    }), [pointer?.name]);
 
     return (
         <div className={_cs(styles.map, className)}>
@@ -57,6 +92,32 @@ function AreaMap(props: Props) {
                     bounds={bounds}
                     padding={50}
                 />
+                {linkedAreas && (
+                    <MapSource
+                        sourceKey="non-clickable-source"
+                        sourceOptions={{
+                            type: 'geojson',
+                        }}
+                        geoJson={linkedCollection}
+                    >
+                        <MapLayer
+                            layerKey="non-clickable-outline"
+                            onMouseEnter={noOp}
+                            layerOptions={{
+                                type: 'line',
+                                paint: nonClickableOutlinePaint,
+                            }}
+                        />
+                        <MapLayer
+                            layerKey="non-clickable-label"
+                            onMouseEnter={noOp}
+                            layerOptions={{
+                                type: 'symbol',
+                                layout: labelLayout,
+                            }}
+                        />
+                    </MapSource>
+                )}
                 {feature && (
                     <MapSource
                         sourceKey={`source-${featureKey}`}
@@ -70,7 +131,15 @@ function AreaMap(props: Props) {
                             onMouseEnter={noOp}
                             layerOptions={{
                                 type: 'line',
-                                paint: outlinePaint,
+                                paint: isDeleted ? redOutlinePaint : blueOutlinePaint,
+                            }}
+                        />
+                        <MapLayer
+                            layerKey="feature-label"
+                            onMouseEnter={noOp}
+                            layerOptions={{
+                                type: 'symbol',
+                                layout: labelLayout,
                             }}
                         />
                     </MapSource>

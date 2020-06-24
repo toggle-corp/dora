@@ -88,19 +88,12 @@ function LinkListing(props: LinkListingProps) {
 
     const [currentTab, setCurrentTab] = useState(tabOptions[0].key);
     const [selectedAddedArea, setSelectedAddedArea] = useState<number>();
+    const [recentStatusChangeIndex, setRecentStatusChangeIndex] = useState<number>();
     const [selectedDeletedArea, setSelectedDeletedArea] = useState<number>();
     const [modalVisibility, setModalVisibility] = useState(false);
     const [addedSearchText, setAddedSearchText] = useState('');
     const [deletedSearchText, setDeletedSearchText] = useState('');
     const [linkedSearchText, setLinkedSearchText] = useState('');
-
-    const handleAreasLink = useCallback((to: number, from: number) => {
-        onAreasLink(to, from, currentAdminLevel);
-    }, [currentAdminLevel, onAreasLink]);
-
-    const handleAreasUnlink = useCallback((to: number, from: number) => {
-        onAreasUnlink(to, from, currentAdminLevel);
-    }, [currentAdminLevel, onAreasUnlink]);
 
     const handleSelectedAreaChange = useCallback((addedArea?: number) => {
         setSelectedAddedArea(addedArea);
@@ -200,33 +193,87 @@ function LinkListing(props: LinkListingProps) {
         setModalVisibility(false);
         setSelectedAddedArea(undefined);
         setSelectedDeletedArea(undefined);
-    }, [setModalVisibility]);
+        setRecentStatusChangeIndex(undefined);
+    }, [
+        setModalVisibility,
+        setSelectedDeletedArea,
+        setSelectedAddedArea,
+        setRecentStatusChangeIndex,
+    ]);
+
+    const handleAreasLink = useCallback((to: number, from: number) => {
+        if (currentTab === 'unlinked') {
+            setRecentStatusChangeIndex(
+                added.findIndex((area) => area.to === to),
+            );
+        } else {
+            setRecentStatusChangeIndex(
+                linked.findIndex((area) => area.to === to),
+            );
+        }
+        onAreasLink(to, from, currentAdminLevel);
+    }, [currentAdminLevel, onAreasLink, currentTab, setRecentStatusChangeIndex, added, linked]);
+
+    const handleAreasUnlink = useCallback((to: number, from: number) => {
+        if (currentTab === 'unlinked') {
+            setRecentStatusChangeIndex(
+                added.findIndex((area) => area.to === to),
+            );
+        } else {
+            setRecentStatusChangeIndex(
+                linked.findIndex((area) => area.to === to),
+            );
+        }
+        onAreasUnlink(to, from, currentAdminLevel);
+    }, [currentAdminLevel, onAreasUnlink, currentTab, setRecentStatusChangeIndex, added, linked]);
 
     const handleNextButtonClick = useCallback(() => {
         setSelectedDeletedArea(undefined);
         if (currentTab === 'unlinked') {
-            const index = added.findIndex((area) => area.to === selectedAddedArea);
+            const index = (recentStatusChangeIndex && (recentStatusChangeIndex - 1))
+                || added.findIndex((area) => area.to === selectedAddedArea);
             setSelectedAddedArea(added[index + 1] ? added[index + 1].to : added[0].to);
         } else {
-            const index = linked.findIndex((area) => area.to === selectedAddedArea);
+            const index = (recentStatusChangeIndex && (recentStatusChangeIndex - 1))
+                || linked.findIndex((area) => area.to === selectedAddedArea);
             setSelectedAddedArea(added[index + 1] ? linked[index + 1].to : linked[0].to);
         }
-    }, [added, setSelectedAddedArea, selectedAddedArea, linked, currentTab]);
+        setRecentStatusChangeIndex(undefined);
+    }, [
+        added,
+        setSelectedAddedArea,
+        selectedAddedArea,
+        linked,
+        currentTab,
+        recentStatusChangeIndex,
+        setRecentStatusChangeIndex,
+    ]);
 
     const handlePreviousButtonClick = useCallback(() => {
         setSelectedDeletedArea(undefined);
         if (currentTab === 'unlinked') {
-            const index = added.findIndex((area) => area.to === selectedAddedArea);
+            const index = (recentStatusChangeIndex && (recentStatusChangeIndex - 1))
+                || added.findIndex((area) => area.to === selectedAddedArea);
             setSelectedAddedArea(
                 added[index - 1] ? added[index - 1].to : added[added.length - 1].to,
             );
         } else {
-            const index = linked.findIndex((area) => area.to === selectedAddedArea);
+            const index = (recentStatusChangeIndex && (recentStatusChangeIndex - 1))
+                || linked.findIndex((area) => area.to === selectedAddedArea);
             setSelectedAddedArea(
                 added[index - 1] ? linked[index - 1].to : linked[linked.length - 1].to,
             );
         }
-    }, [added, setSelectedAddedArea, selectedAddedArea, currentTab, linked]);
+        setRecentStatusChangeIndex(undefined);
+    }, [
+        added,
+        setSelectedAddedArea,
+        selectedAddedArea,
+        linked,
+        currentTab,
+        recentStatusChangeIndex,
+        setRecentStatusChangeIndex,
+    ]);
 
     const {
         to,
@@ -380,7 +427,9 @@ function LinkListing(props: LinkListingProps) {
                     selectedDeletedArea={selectedDeletedArea}
                     setSelectedDeletedArea={setSelectedDeletedArea}
                     deletedAreas={deleted}
-                    pointer={secondSettings.pointer}
+                    linkedAreas={linked}
+                    firstPointer={firstSettings.pointer}
+                    secondPointer={secondSettings.pointer}
                     onNextClick={handleNextButtonClick}
                     onPreviousClick={handlePreviousButtonClick}
                 />

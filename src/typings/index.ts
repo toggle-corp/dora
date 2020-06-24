@@ -7,6 +7,11 @@ export interface Pointer {
     // parentName: string | undefined;
 }
 
+export interface LinkedArea {
+    fromFeature: GeoJsonFeature;
+    toFeature: GeoJsonFeature;
+}
+
 export interface GeoJsonFeature {
     type: string;
     properties: Record<string, unknown>;

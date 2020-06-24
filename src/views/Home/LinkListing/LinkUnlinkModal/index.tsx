@@ -15,6 +15,7 @@ import {
     GeoJson,
     Pointer,
     DeletedItemProps,
+    LinkedArea,
 } from '#typings';
 
 import styles from './styles.css';
@@ -25,6 +26,9 @@ interface AreaProps {
     feature: GeoJson;
     featureKey: number;
     code?: string | number;
+    linkedAreas?: LinkedArea[];
+    pointer?: Pointer;
+    isDeleted: boolean;
 }
 
 function Area(props: AreaProps) {
@@ -32,14 +36,19 @@ function Area(props: AreaProps) {
         code,
         feature,
         featureKey,
+        linkedAreas,
+        pointer,
+        isDeleted,
     } = props;
 
     return (
-        <div className={styles.area}>
-            <h3 className={styles.subHeading}>Map</h3>
+        <div>
             <AreaMap
                 feature={feature}
                 featureKey={featureKey}
+                linkedAreas={linkedAreas}
+                pointer={pointer}
+                isDeleted={isDeleted}
             />
             <div className={styles.propertiesContainer}>
                 <h3 className={styles.subHeading}>Properties</h3>
@@ -72,9 +81,11 @@ interface LinkUnlinkProps {
     selectedDeletedArea?: number;
     setSelectedDeletedArea: (area?: number) => void;
     deletedAreas: DeletedItemProps[];
-    pointer: Pointer;
+    firstPointer: Pointer;
+    secondPointer: Pointer;
     onNextClick: () => void;
     onPreviousClick: () => void;
+    linkedAreas: LinkedArea[];
 }
 
 const optionKeySelector = (d: DeletedItemProps) => d.from;
@@ -97,9 +108,11 @@ function LinkUnlinkModal(props: LinkUnlinkProps) {
         selectedDeletedArea,
         setSelectedDeletedArea,
         deletedAreas,
-        pointer,
         onNextClick,
+        firstPointer,
+        secondPointer,
         onPreviousClick,
+        linkedAreas,
     } = props;
 
     const bounds: (BBox | undefined) = useMemo(() => (
@@ -112,11 +125,25 @@ function LinkUnlinkModal(props: LinkUnlinkProps) {
         }
     }, [to, selectedDeletedArea, onAreasLink]);
 
+    const handleAreasLinkAndNext = useCallback(() => {
+        handleAreasLink();
+        onNextClick();
+    }, [handleAreasLink, onNextClick]);
+
     const handleAreasUnlink = useCallback(() => {
         if (isDefined(to) && isDefined(from)) {
             onAreasUnlink(to, from);
         }
     }, [to, from, onAreasUnlink]);
+
+    const handleAreasUnlinkAndNext = useCallback(() => {
+        handleAreasUnlink();
+        onNextClick();
+    }, [handleAreasUnlink, onNextClick]);
+
+    const selectedDeletedAreaObj = useMemo(() => (
+        deletedAreas.find((da) => da.from === selectedDeletedArea)
+    ), [selectedDeletedArea, deletedAreas]);
 
     return (
         <Modal
@@ -141,22 +168,41 @@ function LinkUnlinkModal(props: LinkUnlinkProps) {
                         Next
                     </Button>
                     {isDefined(from) ? (
-                        <Button
-                            className={styles.button}
-                            variant="danger"
-                            onClick={handleAreasUnlink}
-                        >
-                            Unlink
-                        </Button>
+                        <>
+                            <Button
+                                className={styles.button}
+                                variant="danger"
+                                onClick={handleAreasUnlink}
+                            >
+                                Unlink
+                            </Button>
+                            <Button
+                                className={styles.button}
+                                variant="danger"
+                                onClick={handleAreasUnlinkAndNext}
+                            >
+                                Unlink and Next
+                            </Button>
+                        </>
                     ) : (
-                        <Button
-                            className={styles.button}
-                            variant="primary"
-                            onClick={handleAreasLink}
-                            disabled={isNotDefined(selectedDeletedArea)}
-                        >
-                            Link
-                        </Button>
+                        <>
+                            <Button
+                                className={styles.button}
+                                variant="primary"
+                                onClick={handleAreasLink}
+                                disabled={isNotDefined(selectedDeletedArea)}
+                            >
+                                Link
+                            </Button>
+                            <Button
+                                className={styles.button}
+                                variant="primary"
+                                onClick={handleAreasLinkAndNext}
+                                disabled={isNotDefined(selectedDeletedArea)}
+                            >
+                                Link and Next
+                            </Button>
+                        </>
                     )}
                 </div>
             )}
@@ -171,6 +217,9 @@ function LinkUnlinkModal(props: LinkUnlinkProps) {
                             code={fromCode}
                             feature={fromFeature}
                             featureKey={from}
+                            linkedAreas={linkedAreas}
+                            pointer={firstPointer}
+                            isDeleted
                         />
                     )}
                 </div>
@@ -185,11 +234,25 @@ function LinkUnlinkModal(props: LinkUnlinkProps) {
                     />
                     <ClickableMap
                         bounds={bounds}
-                        pointer={pointer}
+                        pointer={firstPointer}
                         deletedAreas={deletedAreas}
                         selectedArea={selectedDeletedArea}
                         onSelectedAreaChange={setSelectedDeletedArea}
+                        linkedAreas={linkedAreas}
                     />
+                    {isDefined(selectedDeletedAreaObj) && (
+                        <div className={styles.propertiesContainer}>
+                            <h3 className={styles.subHeading}>Properties</h3>
+                            <TextOutput
+                                label="Code"
+                                value={selectedDeletedAreaObj.code}
+                            />
+                            <TextOutput
+                                label="Area"
+                                value={`${calculateArea(selectedDeletedAreaObj.feature)} sq.km`}
+                            />
+                        </div>
+                    )}
                 </div>
             )}
             <div className={styles.currentSelection}>
@@ -201,6 +264,9 @@ function LinkUnlinkModal(props: LinkUnlinkProps) {
                         code={code}
                         feature={feature}
                         featureKey={to}
+                        isDeleted={false}
+                        pointer={secondPointer}
+                        linkedAreas={linkedAreas}
                     />
                 )}
             </div>
