@@ -5,6 +5,10 @@
     min-width: 720px;
     overflow-y: auto;
 
+    .button {
+        margin-left: var(--spacing-small);
+    }
+
     .link-modal-body {
         display: flex;
         flex-grow: 1;

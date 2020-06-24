@@ -3,6 +3,7 @@ import {
     _cs,
     isDefined,
     isNotDefined,
+    compareString,
     caseInsensitiveSubmatch,
 } from '@togglecorp/fujs';
 
@@ -147,7 +148,8 @@ function LinkListing(props: LinkListingProps) {
             .filter((item) => (
                 caseInsensitiveSubmatch(item.toName, linkedSearchText)
                 || caseInsensitiveSubmatch(item.fromName, linkedSearchText)
-            ));
+            ))
+            .sort((a, b) => compareString(a.toName, b.toName));
     }, [unitMapping, linkedSearchText, firstSettings, secondSettings]);
 
     const deleted: DeletedItemProps[] = useMemo(() => {
@@ -168,7 +170,8 @@ function LinkListing(props: LinkListingProps) {
                     feature: firstSettings.geoJson.features[item.from],
                 };
             })
-            .filter((item) => caseInsensitiveSubmatch(item.name, deletedSearchText));
+            .filter((item) => caseInsensitiveSubmatch(item.name, deletedSearchText))
+            .sort((a, b) => compareString(a.name, b.name));
     }, [deletedSearchText, unitMapping, firstSettings, secondSettings]);
 
     const added = useMemo(() => {
@@ -189,7 +192,8 @@ function LinkListing(props: LinkListingProps) {
                     feature: secondSettings.geoJson.features[item.to],
                 };
             })
-            .filter((item) => caseInsensitiveSubmatch(item.name, addedSearchText));
+            .filter((item) => caseInsensitiveSubmatch(item.name, addedSearchText))
+            .sort((a, b) => compareString(a.name, b.name));
     }, [unitMapping, addedSearchText, firstSettings, secondSettings]);
 
     const handleModalCloseClick = useCallback(() => {
@@ -197,6 +201,32 @@ function LinkListing(props: LinkListingProps) {
         setSelectedAddedArea(undefined);
         setSelectedDeletedArea(undefined);
     }, [setModalVisibility]);
+
+    const handleNextButtonClick = useCallback(() => {
+        setSelectedDeletedArea(undefined);
+        if (currentTab === 'unlinked') {
+            const index = added.findIndex((area) => area.to === selectedAddedArea);
+            setSelectedAddedArea(added[index + 1] ? added[index + 1].to : added[0].to);
+        } else {
+            const index = linked.findIndex((area) => area.to === selectedAddedArea);
+            setSelectedAddedArea(added[index + 1] ? linked[index + 1].to : linked[0].to);
+        }
+    }, [added, setSelectedAddedArea, selectedAddedArea, linked, currentTab]);
+
+    const handlePreviousButtonClick = useCallback(() => {
+        setSelectedDeletedArea(undefined);
+        if (currentTab === 'unlinked') {
+            const index = added.findIndex((area) => area.to === selectedAddedArea);
+            setSelectedAddedArea(
+                added[index - 1] ? added[index - 1].to : added[added.length - 1].to,
+            );
+        } else {
+            const index = linked.findIndex((area) => area.to === selectedAddedArea);
+            setSelectedAddedArea(
+                added[index - 1] ? linked[index - 1].to : linked[linked.length - 1].to,
+            );
+        }
+    }, [added, setSelectedAddedArea, selectedAddedArea, currentTab, linked]);
 
     const {
         to,
@@ -351,6 +381,8 @@ function LinkListing(props: LinkListingProps) {
                     setSelectedDeletedArea={setSelectedDeletedArea}
                     deletedAreas={deleted}
                     pointer={secondSettings.pointer}
+                    onNextClick={handleNextButtonClick}
+                    onPreviousClick={handlePreviousButtonClick}
                 />
             )}
         </div>

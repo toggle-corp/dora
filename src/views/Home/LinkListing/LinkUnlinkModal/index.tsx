@@ -73,6 +73,8 @@ interface LinkUnlinkProps {
     setSelectedDeletedArea: (area?: number) => void;
     deletedAreas: DeletedItemProps[];
     pointer: Pointer;
+    onNextClick: () => void;
+    onPreviousClick: () => void;
 }
 
 const optionKeySelector = (d: DeletedItemProps) => d.from;
@@ -96,6 +98,8 @@ function LinkUnlinkModal(props: LinkUnlinkProps) {
         setSelectedDeletedArea,
         deletedAreas,
         pointer,
+        onNextClick,
+        onPreviousClick,
     } = props;
 
     const bounds: (BBox | undefined) = useMemo(() => (
@@ -122,8 +126,23 @@ function LinkUnlinkModal(props: LinkUnlinkProps) {
             header={<h3>{`Link ${name}`}</h3>}
             footer={(
                 <div className={styles.modalFooter}>
+                    <Button
+                        className={styles.button}
+                        variant="accent"
+                        onClick={onPreviousClick}
+                    >
+                        Previous
+                    </Button>
+                    <Button
+                        className={styles.button}
+                        variant="accent"
+                        onClick={onNextClick}
+                    >
+                        Next
+                    </Button>
                     {isDefined(from) ? (
                         <Button
+                            className={styles.button}
                             variant="danger"
                             onClick={handleAreasUnlink}
                         >
@@ -131,6 +150,7 @@ function LinkUnlinkModal(props: LinkUnlinkProps) {
                         </Button>
                     ) : (
                         <Button
+                            className={styles.button}
                             variant="primary"
                             onClick={handleAreasLink}
                             disabled={isNotDefined(selectedDeletedArea)}
