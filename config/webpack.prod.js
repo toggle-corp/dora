@@ -1,6 +1,6 @@
 import ResourceHintWebpackPlugin from 'resource-hints-webpack-plugin';
 import CompressionPlugin from 'compression-webpack-plugin';
-import WorkboxPlugin from 'workbox-webpack-plugin';
+// import WorkboxPlugin from 'workbox-webpack-plugin';
 import WebpackPwaManifest from 'webpack-pwa-manifest';
 import path from 'path';
 import webpack from 'webpack';
@@ -198,6 +198,7 @@ module.exports = (env) => {
                 filename: 'css/[name].css',
                 chunkFilename: 'css/[id].css',
             }),
+            /*
             new WorkboxPlugin.GenerateSW({
                 // these options encourage the ServiceWorkers to get in there fast
                 // and not allow any straggling "old" SWs to hang around
@@ -205,7 +206,7 @@ module.exports = (env) => {
                 skipWaiting: true,
                 include: [/\.html$/, /\.js$/, /\.css$/],
                 navigateFallback: '/index.html',
-                navigateFallbackBlacklist: [/^\/assets/, /^\/admin/, /^\/api/],
+                navigateFallbackDenylist: [/^\/assets/, /^\/admin/, /^\/api/],
                 cleanupOutdatedCaches: true,
                 runtimeCaching: [
                     {
@@ -214,6 +215,7 @@ module.exports = (env) => {
                     },
                 ],
             }),
+            */
             new WebpackPwaManifest({
                 name: 'dora',
                 short_name: 'Dora',

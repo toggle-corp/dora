@@ -11,6 +11,10 @@
         flex-basis: var(--width-sidebar);
         border-right: var(--width-separator-thin) solid var(--color-separator);
         padding: 0 var(--spacing-medium);
+
+        .file-import-container {
+            margin: var(--spacing-medium) 0;
+        }
     }
 
     .main-content {
@@ -20,16 +24,31 @@
         margin: 0 var(--spacing-medium);
         overflow-y: auto;
 
-        .tabs {
+        .header {
+            display: flex;
+            align-items: flex-end;
             flex-shrink: 0;
-            margin-bottom: var(--spacing-small);
+
+            .tabs {
+                flex-grow: 1;
+            }
+
+            .download-link {
+                display: inline-block;
+                flex-shrink: 0;
+                margin: var(--spacing-small) 0;
+                border-radius: var(--radius-button);
+                background-color: var(--color-primary);
+                padding: var(--spacing-small) var(--spacing-medium);
+                text-decoration: none;
+                color: var(--color-text-on-primary);
+            }
         }
 
         .content {
             display: flex;
             flex-direction: column;
             flex-grow: 1;
-            border: var(--width-separator-thin) solid var(--color-separator);
             overflow-y: auto;
 
             .map {
@@ -43,6 +62,7 @@
 
             .link-listing {
                 flex-grow: 1;
+                border: var(--width-separator-thin) solid var(--color-separator);
                 overflow-y: auto;
             }
         }

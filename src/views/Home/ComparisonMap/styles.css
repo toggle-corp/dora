@@ -3,7 +3,6 @@
     flex-direction: column;
 
     .map-container {
-        border-radius: var(--radius-modal);
         height: 100%;
     }
 }

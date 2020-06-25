@@ -5,7 +5,7 @@
 .link-modal {
     display: flex;
     flex-direction: column;
-    width: 80vw;
+    width: 80vw!important;
     min-width: 720px;
     overflow-y: auto;
 
@@ -24,7 +24,7 @@
 
         .current-selection {
             flex-basis: 50%;
-            border-left: var(--width-separator-thin) solid var(--color-separator);
+            border-right: var(--width-separator-thin) solid var(--color-separator);
             padding: var(--spacing-small);
         }
 

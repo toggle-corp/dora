@@ -32,6 +32,11 @@ const fillPaint: mapboxgl.FillPaint = {
     ],
 };
 
+const nonEmptyFillPaint: mapboxgl.FillPaint = {
+    'fill-color': '#919191',
+    'fill-opacity': 0.1,
+};
+
 const nonClickableOutlinePaint: mapboxgl.LinePaint = {
     'line-color': '#414141',
     'line-width': 1,
@@ -156,6 +161,14 @@ function ClickableMap(props: Props) {
                             layerOptions={{
                                 type: 'line',
                                 paint: nonClickableOutlinePaint,
+                            }}
+                        />
+                        <MapLayer
+                            layerKey="linked-area-fill"
+                            onMouseEnter={noOp}
+                            layerOptions={{
+                                type: 'fill',
+                                paint: nonEmptyFillPaint,
                             }}
                         />
                         <MapLayer

@@ -1,9 +1,15 @@
-import React, { useState, useCallback, useMemo } from 'react';
-import { _cs, isDefined, isNotDefined } from '@togglecorp/fujs';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import {
+    _cs,
+    isDefined,
+    isNotDefined,
+    doesObjectHaveNoData,
+} from '@togglecorp/fujs';
 import produce from 'immer';
 
 import Button from '#components/Button';
 import SegmentInput from '#components/SegmentInput';
+import Label from '#components/Label';
 
 import oldCountry from '#resources/admin0.json';
 import oldDepartment from '#resources/admin1.json';
@@ -17,6 +23,8 @@ import {
     AdminSet,
     GeoJson,
 } from '#typings';
+
+import { useStoredState } from '#hooks/useStoredState';
 
 import AdminLevels from './AdminLevels';
 import Sets from './Sets';
@@ -159,7 +167,18 @@ function Home(props: Props) {
     const { className } = props;
 
     const [currentAdminLevel, setCurrentAdminLevel] = useState(adminLevels[0].key);
-    const [mapping, setMapping] = useState<{ [key: string]: Link[] } | undefined>(undefined);
+    const [storedMapping, setStoredMapping] = useStoredState<string>('mapping', '{}');
+    const [mapping, setMapping] = useState<{ [key: string]: Link[] } | undefined>(
+        (doesObjectHaveNoData(JSON.parse(storedMapping)) ? undefined : JSON.parse(storedMapping)),
+    );
+
+    useEffect(() => {
+        if (isDefined(mapping)) {
+            setStoredMapping(JSON.stringify(mapping));
+        } else {
+            setStoredMapping('{}');
+        }
+    }, [mapping, setStoredMapping]);
 
     const firstSet = sets[0];
     const secondSet = sets[1];
@@ -248,6 +267,24 @@ function Home(props: Props) {
         setMapping(newMapping);
     }, [mapping, setMapping]);
 
+    const downloadLink = useMemo(() => (
+        `data:text/json;charset=utf-8,${encodeURIComponent(storedMapping)}`
+    ), [storedMapping]);
+
+    const handleFileUpload = useCallback((event) => {
+        const reader = new FileReader();
+        reader.onload = function (eventForOnload) {
+            const jsonObj = JSON.parse(String(eventForOnload.target?.result));
+            if (!doesObjectHaveNoData(jsonObj)) {
+                setMapping(jsonObj);
+            } else {
+                console.error('File import error!!');
+            }
+        };
+
+        reader.readAsText(event.target.files[0]);
+    }, [setMapping]);
+
     return (
         <div className={_cs(className, styles.home)}>
             <div className={styles.sidebar}>
@@ -262,16 +299,37 @@ function Home(props: Props) {
                 >
                     Calculate
                 </Button>
+                <div className={styles.fileImportContainer}>
+                    <Label>
+                        Import Mapping
+                    </Label>
+                    <input
+                        className={styles.fileImport}
+                        type="file"
+                        onChange={handleFileUpload}
+                    />
+                </div>
             </div>
             <div className={styles.mainContent}>
-                <SegmentInput
-                    className={styles.tabs}
-                    options={adminLevelsWithCount}
-                    optionKeySelector={optionKeySelector}
-                    optionLabelSelector={optionLabelSelector}
-                    value={currentAdminLevel}
-                    onChange={setCurrentAdminLevel}
-                />
+                <div className={styles.header}>
+                    <SegmentInput
+                        className={styles.tabs}
+                        options={adminLevelsWithCount}
+                        optionKeySelector={optionKeySelector}
+                        optionLabelSelector={optionLabelSelector}
+                        value={currentAdminLevel}
+                        onChange={setCurrentAdminLevel}
+                    />
+                    <a
+                        className={styles.downloadLink}
+                        href={downloadLink}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        download="mapping.json"
+                    >
+                        Export Mapping
+                    </a>
+                </div>
                 <div className={styles.content}>
                     <Map
                         className={_cs(

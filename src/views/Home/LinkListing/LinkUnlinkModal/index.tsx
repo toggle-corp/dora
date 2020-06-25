@@ -83,6 +83,8 @@ interface LinkUnlinkProps {
     deletedAreas: DeletedItemProps[];
     firstPointer: Pointer;
     secondPointer: Pointer;
+    firstSetTitle: string;
+    secondSetTitle: string;
     onNextClick: () => void;
     onPreviousClick: () => void;
     linkedAreas: LinkedArea[];
@@ -112,6 +114,8 @@ function LinkUnlinkModal(props: LinkUnlinkProps) {
         firstPointer,
         secondPointer,
         onPreviousClick,
+        firstSetTitle,
+        secondSetTitle,
         linkedAreas,
     } = props;
 
@@ -155,14 +159,12 @@ function LinkUnlinkModal(props: LinkUnlinkProps) {
                 <div className={styles.modalFooter}>
                     <Button
                         className={styles.button}
-                        variant="accent"
                         onClick={onPreviousClick}
                     >
                         Previous
                     </Button>
                     <Button
                         className={styles.button}
-                        variant="accent"
                         onClick={onNextClick}
                     >
                         Next
@@ -207,8 +209,29 @@ function LinkUnlinkModal(props: LinkUnlinkProps) {
                 </div>
             )}
         >
+            <div className={styles.currentSelection}>
+                <h3 className={styles.heading}>
+                    {secondSetTitle}
+                </h3>
+                <div className={styles.heading}>
+                    {name}
+                </div>
+                {isDefined(feature) && isDefined(to) && (
+                    <Area
+                        code={code}
+                        feature={feature}
+                        featureKey={to}
+                        isDeleted={false}
+                        pointer={secondPointer}
+                        linkedAreas={linkedAreas}
+                    />
+                )}
+            </div>
             {isDefined(from) ? (
                 <div className={styles.currentLinked}>
+                    <h3 className={styles.heading}>
+                        {firstSetTitle}
+                    </h3>
                     <div className={styles.heading}>
                         {fromName}
                     </div>
@@ -225,6 +248,9 @@ function LinkUnlinkModal(props: LinkUnlinkProps) {
                 </div>
             ) : (
                 <div className={styles.deletedAreasContainer}>
+                    <h3 className={styles.heading}>
+                        {firstSetTitle}
+                    </h3>
                     <SelectInput
                         optionKeySelector={optionKeySelector}
                         optionLabelSelector={optionLabelSelector}
@@ -255,21 +281,6 @@ function LinkUnlinkModal(props: LinkUnlinkProps) {
                     )}
                 </div>
             )}
-            <div className={styles.currentSelection}>
-                <div className={styles.heading}>
-                    {name}
-                </div>
-                {isDefined(feature) && isDefined(to) && (
-                    <Area
-                        code={code}
-                        feature={feature}
-                        featureKey={to}
-                        isDeleted={false}
-                        pointer={secondPointer}
-                        linkedAreas={linkedAreas}
-                    />
-                )}
-            </div>
         </Modal>
     );
 }

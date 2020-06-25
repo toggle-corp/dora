@@ -27,6 +27,7 @@
     --radius-button: 4px;
     --radius-input: 4px;
     --radius-modal: 8px;
+    --radius-card: 8px;
 
     /* DIMENSIONS */
     --width-separator-thin: 1px;
@@ -60,6 +61,7 @@
     /* COLOR GENERAL */
     --color-background: #fff;
     --color-background-dark: #f5f5f5;
+    --color-background-card: #f8f1ff;
     --color-background-added-area: #e1c7fd;
     --color-background-removed-area: #ffbdc3;
 

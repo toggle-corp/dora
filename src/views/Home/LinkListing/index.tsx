@@ -236,7 +236,7 @@ function LinkListing(props: LinkListingProps) {
         } else {
             const index = (recentStatusChangeIndex && (recentStatusChangeIndex - 1))
                 || linked.findIndex((area) => area.to === selectedAddedArea);
-            setSelectedAddedArea(added[index + 1] ? linked[index + 1].to : linked[0].to);
+            setSelectedAddedArea(linked[index + 1] ? linked[index + 1].to : linked[0].to);
         }
         setRecentStatusChangeIndex(undefined);
     }, [
@@ -261,7 +261,7 @@ function LinkListing(props: LinkListingProps) {
             const index = (recentStatusChangeIndex && (recentStatusChangeIndex - 1))
                 || linked.findIndex((area) => area.to === selectedAddedArea);
             setSelectedAddedArea(
-                added[index - 1] ? linked[index - 1].to : linked[linked.length - 1].to,
+                linked[index - 1] ? linked[index - 1].to : linked[linked.length - 1].to,
             );
         }
         setRecentStatusChangeIndex(undefined);
@@ -428,6 +428,8 @@ function LinkListing(props: LinkListingProps) {
                     setSelectedDeletedArea={setSelectedDeletedArea}
                     deletedAreas={deleted}
                     linkedAreas={linked}
+                    firstSetTitle={firstSet.title}
+                    secondSetTitle={secondSet.title}
                     firstPointer={firstSettings.pointer}
                     secondPointer={secondSettings.pointer}
                     onNextClick={handleNextButtonClick}

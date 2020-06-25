@@ -47,6 +47,16 @@ const blueOutlinePaint: mapboxgl.LinePaint = {
     'line-opacity': 1,
 };
 
+const bluePaint: mapboxgl.FillPaint = {
+    'fill-color': '#6200ee',
+    'fill-opacity': 0.3,
+};
+
+const redPaint: mapboxgl.FillPaint = {
+    'fill-color': '#f34236',
+    'fill-opacity': 0.3,
+};
+
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const noOp = () => {};
 
@@ -132,6 +142,14 @@ function AreaMap(props: Props) {
                             layerOptions={{
                                 type: 'line',
                                 paint: isDeleted ? redOutlinePaint : blueOutlinePaint,
+                            }}
+                        />
+                        <MapLayer
+                            layerKey="selected-area-fill"
+                            onMouseEnter={noOp}
+                            layerOptions={{
+                                type: 'fill',
+                                paint: isDeleted ? redPaint : bluePaint,
                             }}
                         />
                         <MapLayer
