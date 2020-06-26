@@ -12,8 +12,8 @@ import MapBounds from '#re-map/MapBounds';
 
 import {
     DeletedItemProps,
-    LinkedArea,
     Pointer,
+    GeoJson,
 } from '#typings';
 
 import styles from './styles.css';
@@ -21,6 +21,12 @@ import styles from './styles.css';
 type BBox = [number, number, number, number];
 
 const lightStyle = 'mapbox://styles/mapbox/light-v10';
+
+const labelPaint: mapboxgl.SymbolPaint = {
+    'text-halo-color': '#ffffff',
+    'text-halo-width': 1,
+    'text-halo-blur': 0,
+};
 
 const fillPaint: mapboxgl.FillPaint = {
     'fill-color': '#f34236',
@@ -56,7 +62,7 @@ interface Props {
     className?: string;
     bounds: BBox;
     deletedAreas: DeletedItemProps[];
-    linkedAreas: LinkedArea[];
+    allAreas: GeoJson;
     onSelectedAreaChange: (area: number) => void;
     pointer: Pointer;
 }
@@ -66,7 +72,7 @@ function ClickableMap(props: Props) {
         className,
         bounds,
         deletedAreas,
-        linkedAreas,
+        allAreas,
         onSelectedAreaChange,
         pointer,
     } = props;
@@ -74,11 +80,6 @@ function ClickableMap(props: Props) {
     const collection = {
         type: 'FeatureCollection',
         features: deletedAreas.map((da) => da.feature),
-    };
-
-    const linkedCollection = {
-        type: 'FeatureCollection',
-        features: linkedAreas?.map((da) => da.fromFeature),
     };
 
     const handleAreaClick = useCallback((feature) => {
@@ -113,14 +114,14 @@ function ClickableMap(props: Props) {
                 />
                 {deletedAreas && (
                     <MapSource
-                        sourceKey="clickable-source"
+                        sourceKey="clickable-areas"
                         sourceOptions={{
                             type: 'geojson',
                         }}
                         geoJson={collection}
                     >
                         <MapLayer
-                            layerKey="new-source-outline"
+                            layerKey="clickable-areas-outline"
                             onMouseEnter={noOp}
                             layerOptions={{
                                 type: 'line',
@@ -128,7 +129,7 @@ function ClickableMap(props: Props) {
                             }}
                         />
                         <MapLayer
-                            layerKey="new-source-fill"
+                            layerKey="clickable-areas-fill"
                             onMouseEnter={noOp}
                             layerOptions={{
                                 type: 'fill',
@@ -137,26 +138,27 @@ function ClickableMap(props: Props) {
                             onClick={handleAreaClick}
                         />
                         <MapLayer
-                            layerKey="source-label"
+                            layerKey="clickable-areas-label"
                             onMouseEnter={noOp}
                             layerOptions={{
                                 type: 'symbol',
+                                paint: labelPaint,
                                 layout: labelLayout,
                             }}
                             onClick={handleAreaClick}
                         />
                     </MapSource>
                 )}
-                {linkedAreas && (
+                {allAreas && (
                     <MapSource
-                        sourceKey="non-clickable-source"
+                        sourceKey="all-areas-source"
                         sourceOptions={{
                             type: 'geojson',
                         }}
-                        geoJson={linkedCollection}
+                        geoJson={allAreas}
                     >
                         <MapLayer
-                            layerKey="non-clickable-outline"
+                            layerKey="all-areas-outline"
                             onMouseEnter={noOp}
                             layerOptions={{
                                 type: 'line',
@@ -164,7 +166,7 @@ function ClickableMap(props: Props) {
                             }}
                         />
                         <MapLayer
-                            layerKey="linked-area-fill"
+                            layerKey="all-areas-fill"
                             onMouseEnter={noOp}
                             layerOptions={{
                                 type: 'fill',
@@ -172,10 +174,11 @@ function ClickableMap(props: Props) {
                             }}
                         />
                         <MapLayer
-                            layerKey="non-clickable-label"
+                            layerKey="all-areas-label"
                             onMouseEnter={noOp}
                             layerOptions={{
                                 type: 'symbol',
+                                paint: labelPaint,
                                 layout: labelLayout,
                             }}
                         />

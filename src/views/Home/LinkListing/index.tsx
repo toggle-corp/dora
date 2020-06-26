@@ -427,11 +427,10 @@ function LinkListing(props: LinkListingProps) {
                     selectedDeletedArea={selectedDeletedArea}
                     setSelectedDeletedArea={setSelectedDeletedArea}
                     deletedAreas={deleted}
-                    linkedAreas={linked}
                     firstSetTitle={firstSet.title}
                     secondSetTitle={secondSet.title}
-                    firstPointer={firstSettings.pointer}
-                    secondPointer={secondSettings.pointer}
+                    firstSettings={firstSettings}
+                    secondSettings={secondSettings}
                     onNextClick={handleNextButtonClick}
                     onPreviousClick={handlePreviousButtonClick}
                 />

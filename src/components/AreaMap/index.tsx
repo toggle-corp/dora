@@ -11,7 +11,6 @@ import MapBounds from '#re-map/MapBounds';
 import {
     Pointer,
     GeoJson,
-    LinkedArea,
 } from '#typings';
 
 import styles from './styles.css';
@@ -22,9 +21,9 @@ interface Props {
     className?: string;
     feature?: GeoJson;
     featureKey: string | number;
-    linkedAreas?: LinkedArea[];
     pointer?: Pointer;
     isDeleted: boolean;
+    allAreas: GeoJson;
 }
 
 const lightStyle = 'mapbox://styles/mapbox/light-v10';
@@ -65,7 +64,7 @@ function AreaMap(props: Props) {
         className,
         feature,
         featureKey,
-        linkedAreas,
+        allAreas,
         isDeleted,
         pointer,
     } = props;
@@ -73,11 +72,6 @@ function AreaMap(props: Props) {
     const bounds: (BBox | undefined) = useMemo(() => (
         feature ? bbox(feature) : undefined
     ), [feature]);
-
-    const linkedCollection = {
-        type: 'FeatureCollection',
-        features: linkedAreas?.map((da) => (isDeleted ? da.fromFeature : da.toFeature)),
-    };
 
     const labelLayout: mapboxgl.SymbolLayout = useMemo(() => ({
         'text-field': ['get', pointer?.name],
@@ -102,16 +96,16 @@ function AreaMap(props: Props) {
                     bounds={bounds}
                     padding={50}
                 />
-                {linkedAreas && (
+                {allAreas && (
                     <MapSource
-                        sourceKey="non-clickable-source"
+                        sourceKey="all-areas"
                         sourceOptions={{
                             type: 'geojson',
                         }}
-                        geoJson={linkedCollection}
+                        geoJson={allAreas}
                     >
                         <MapLayer
-                            layerKey="non-clickable-outline"
+                            layerKey="all-areas-outline"
                             onMouseEnter={noOp}
                             layerOptions={{
                                 type: 'line',
@@ -119,7 +113,7 @@ function AreaMap(props: Props) {
                             }}
                         />
                         <MapLayer
-                            layerKey="non-clickable-label"
+                            layerKey="all-areas-label"
                             onMouseEnter={noOp}
                             layerOptions={{
                                 type: 'symbol',
@@ -137,7 +131,7 @@ function AreaMap(props: Props) {
                         geoJson={feature}
                     >
                         <MapLayer
-                            layerKey="new-source-outline"
+                            layerKey="selected-area-outline"
                             onMouseEnter={noOp}
                             layerOptions={{
                                 type: 'line',
@@ -153,7 +147,7 @@ function AreaMap(props: Props) {
                             }}
                         />
                         <MapLayer
-                            layerKey="feature-label"
+                            layerKey="selected-area-label"
                             onMouseEnter={noOp}
                             layerOptions={{
                                 type: 'symbol',

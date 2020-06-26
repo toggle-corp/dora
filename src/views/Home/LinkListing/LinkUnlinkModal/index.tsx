@@ -15,7 +15,7 @@ import {
     GeoJson,
     Pointer,
     DeletedItemProps,
-    LinkedArea,
+    Settings,
 } from '#typings';
 
 import styles from './styles.css';
@@ -26,7 +26,6 @@ interface AreaProps {
     feature: GeoJson;
     featureKey: number;
     code?: string | number;
-    linkedAreas?: LinkedArea[];
     pointer?: Pointer;
     isDeleted: boolean;
 }
@@ -36,7 +35,7 @@ function Area(props: AreaProps) {
         code,
         feature,
         featureKey,
-        linkedAreas,
+        allAreas,
         pointer,
         isDeleted,
     } = props;
@@ -46,7 +45,7 @@ function Area(props: AreaProps) {
             <AreaMap
                 feature={feature}
                 featureKey={featureKey}
-                linkedAreas={linkedAreas}
+                allAreas={allAreas}
                 pointer={pointer}
                 isDeleted={isDeleted}
             />
@@ -81,13 +80,12 @@ interface LinkUnlinkProps {
     selectedDeletedArea?: number;
     setSelectedDeletedArea: (area?: number) => void;
     deletedAreas: DeletedItemProps[];
-    firstPointer: Pointer;
-    secondPointer: Pointer;
+    secondSettings: Settings;
+    firstSettings: Settings;
     firstSetTitle: string;
     secondSetTitle: string;
     onNextClick: () => void;
     onPreviousClick: () => void;
-    linkedAreas: LinkedArea[];
 }
 
 const optionKeySelector = (d: DeletedItemProps) => d.from;
@@ -111,13 +109,22 @@ function LinkUnlinkModal(props: LinkUnlinkProps) {
         setSelectedDeletedArea,
         deletedAreas,
         onNextClick,
-        firstPointer,
-        secondPointer,
+        firstSettings,
+        secondSettings,
         onPreviousClick,
         firstSetTitle,
         secondSetTitle,
-        linkedAreas,
     } = props;
+
+    const {
+        pointer: firstPointer,
+        geoJson: firstGeoJson,
+    } = firstSettings;
+
+    const {
+        pointer: secondPointer,
+        geoJson: secondGeoJson,
+    } = secondSettings;
 
     const bounds: (BBox | undefined) = useMemo(() => (
         feature ? bbox(feature) : undefined
@@ -223,7 +230,7 @@ function LinkUnlinkModal(props: LinkUnlinkProps) {
                         featureKey={to}
                         isDeleted={false}
                         pointer={secondPointer}
-                        linkedAreas={linkedAreas}
+                        allAreas={secondGeoJson}
                     />
                 )}
             </div>
@@ -240,7 +247,7 @@ function LinkUnlinkModal(props: LinkUnlinkProps) {
                             code={fromCode}
                             feature={fromFeature}
                             featureKey={from}
-                            linkedAreas={linkedAreas}
+                            allAreas={firstGeoJson}
                             pointer={firstPointer}
                             isDeleted
                         />
@@ -264,7 +271,7 @@ function LinkUnlinkModal(props: LinkUnlinkProps) {
                         deletedAreas={deletedAreas}
                         selectedArea={selectedDeletedArea}
                         onSelectedAreaChange={setSelectedDeletedArea}
-                        linkedAreas={linkedAreas}
+                        allAreas={firstGeoJson}
                     />
                     {isDefined(selectedDeletedAreaObj) && (
                         <div className={styles.propertiesContainer}>
