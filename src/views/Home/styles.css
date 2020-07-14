@@ -37,6 +37,7 @@
                 display: inline-block;
                 flex-shrink: 0;
                 margin: var(--spacing-small) 0;
+                margin-left: var(--spacing-small);
                 border-radius: var(--radius-button);
                 background-color: var(--color-primary);
                 padding: var(--spacing-small) var(--spacing-medium);

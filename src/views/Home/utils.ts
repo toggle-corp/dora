@@ -4,6 +4,7 @@ import {
     Settings,
     Code,
     AdminLevel,
+    AdminSet,
     Pointer,
     GeoJsonFeature,
 } from '#typings';
@@ -171,33 +172,33 @@ function generateUnitMapping(unitFoo: Settings, unitBar: Settings) {
     const fooProperties = getProperties(unitFoo);
     const fooDuplicateNames = getDuplicates(
         fooProperties
-            .map((item) => item.name)
+            .map((item) => item.code)
             .filter(isDefined)
             .map(getCanonicalName),
         (item) => item,
     );
     const fooDuplicateNamesSet = new Set(fooDuplicateNames);
     const validFooProperties = fooProperties.filter(
-        (item) => isDefined(item.name) && !fooDuplicateNamesSet.has(getCanonicalName(item.name)),
+        (item) => isDefined(item.code) && !fooDuplicateNamesSet.has(getCanonicalName(item.code)),
     );
     const invalidFooProperties = fooProperties.filter((item) => (
-        isNotDefined(item.name) || fooDuplicateNamesSet.has(getCanonicalName(item.name))
+        isNotDefined(item.code) || fooDuplicateNamesSet.has(getCanonicalName(item.code))
     ));
 
     const barProperties = getProperties(unitBar);
     const barDuplicateNames = getDuplicates(
         barProperties
-            .map((item) => item.name)
+            .map((item) => item.code)
             .filter(isDefined)
             .map(getCanonicalName),
         (item) => item,
     );
     const barDuplicateNamesSet = new Set(barDuplicateNames);
     const validBarProperties = barProperties.filter(
-        (item) => isDefined(item.name) && !barDuplicateNamesSet.has(getCanonicalName(item.name)),
+        (item) => isDefined(item.code) && !barDuplicateNamesSet.has(getCanonicalName(item.code)),
     );
     const invalidBarProperties = barProperties.filter((item) => (
-        isNotDefined(item.name) || barDuplicateNamesSet.has(getCanonicalName(item.name))
+        isNotDefined(item.code) || barDuplicateNamesSet.has(getCanonicalName(item.code))
     ));
 
     const {
@@ -208,7 +209,7 @@ function generateUnitMapping(unitFoo: Settings, unitBar: Settings) {
     } = findDifferenceInList(
         validFooProperties,
         validBarProperties,
-        (item) => getCanonicalName(item.name),
+        (item) => getCanonicalName(item.code),
     );
     // NOTE: name is defined here
 

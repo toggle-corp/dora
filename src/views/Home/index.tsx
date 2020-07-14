@@ -11,9 +11,9 @@ import Button from '#components/Button';
 import SegmentInput from '#components/SegmentInput';
 import Label from '#components/Label';
 
-import oldCountry from '#resources/admin0.json';
-import oldDepartment from '#resources/admin1.json';
-import oldMuni from '#resources/admin2.json';
+import oldCountry from '#resources/new-new-admin0.json';
+import oldDepartment from '#resources/new-new-admin1.json';
+import oldMuni from '#resources/new-new-admin2.json';
 
 import newCountry from '#resources/new-admin0.json';
 import newDepartment from '#resources/new-admin1.json';
@@ -76,6 +76,8 @@ const sets: AdminSet[] = [
             {
                 key: 1,
                 adminLevel: 'country',
+                adminLevelPk: 134,
+                parentAdminLevelPk: undefined,
                 geoJson: addUniqueIds(oldCountry) as unknown as GeoJson,
                 pointer: {
                     name: 'title',
@@ -87,6 +89,8 @@ const sets: AdminSet[] = [
             {
                 key: 2,
                 adminLevel: 'department',
+                adminLevelPk: 135,
+                parentAdminLevelPk: 134,
                 geoJson: addUniqueIds(oldDepartment) as unknown as GeoJson,
                 pointer: {
                     name: 'title',
@@ -98,6 +102,8 @@ const sets: AdminSet[] = [
             {
                 key: 3,
                 adminLevel: 'municipality',
+                adminLevelPk: 136,
+                parentAdminLevelPk: 135,
                 geoJson: addUniqueIds(oldMuni) as unknown as GeoJson,
                 pointer: {
                     name: 'title',

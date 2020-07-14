@@ -7,6 +7,7 @@ import {
     caseInsensitiveSubmatch,
 } from '@togglecorp/fujs';
 
+import Button from '#components/Button';
 import TextOutput from '#components/TextOutput';
 import TextInput from '#components/TextInput';
 import SegmentInput from '#components/SegmentInput';
@@ -130,6 +131,8 @@ function LinkListing(props: LinkListingProps) {
                 return {
                     from: item.from,
                     to: item.to,
+                    toProperty,
+                    fromProperty,
                     toName: toProperty.name,
                     toCode: toProperty.code,
                     fromName: fromProperty.name,
@@ -182,6 +185,7 @@ function LinkListing(props: LinkListingProps) {
                     to: item.to,
                     name: property.name,
                     code: property.code,
+                    property,
                     feature: secondSettings.geoJson.features[item.to],
                 };
             })
@@ -313,20 +317,57 @@ function LinkListing(props: LinkListingProps) {
         });
     }, [selectedAddedArea, added, linked]);
 
+    const handleDetailedMappingClick = useCallback(() => {
+        const linkedMap = linked.map((l) => ({
+            pk: l.fromFeature.properties.pk,
+            geoJson: l.toFeature,
+            parentCode: l.toProperty.parentCode,
+            parentAdminLevel: firstSettings.parentAdminLevelPk,
+            code: l.toCode,
+            title: l.toName,
+        }));
+        const addedMap = added.map((a) => ({
+            geoJson: a.feature,
+            parentCode: a.property.parentCode,
+            parentAdminLevel: firstSettings.parentAdminLevelPk,
+            code: a.code,
+            title: a.name,
+        }));
+        const deletedMap = deleted.map((d) => d.feature?.properties.pk).filter(isDefined);
+        // return `data:text/json;charset=utf-8,${encodeURIComponent(storedMapping)}`;
+
+        const finalMap = {
+            updated: linkedMap,
+            added: addedMap,
+            deleted: deletedMap,
+            adminLevel: firstSettings.adminLevelPk,
+        };
+        console.warn('here', finalMap);
+    }, [added, deleted, linked, firstSettings]);
+
     if (!unitMapping || !firstSettings || !secondSettings) {
         return null;
     }
 
     return (
         <div className={_cs(styles.links, className)}>
-            <SegmentInput
-                className={styles.tabs}
-                options={tabOptions}
-                optionKeySelector={keySelector}
-                optionLabelSelector={titleSelector}
-                value={currentTab}
-                onChange={setCurrentTab}
-            />
+            <div className={styles.mainHeader}>
+                <SegmentInput
+                    className={styles.tabs}
+                    options={tabOptions}
+                    optionKeySelector={keySelector}
+                    optionLabelSelector={titleSelector}
+                    value={currentTab}
+                    onChange={setCurrentTab}
+                />
+                <Button
+                    className={styles.downloadLink}
+                    onClick={handleDetailedMappingClick}
+                    variant="primary"
+                >
+                    Detailed Mapping
+                </Button>
+            </div>
             {currentTab === 'unlinked' && (
                 <>
                     {(added.length === 0 && deleted.length === 0) ? (
