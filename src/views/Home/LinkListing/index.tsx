@@ -101,7 +101,7 @@ function LinkListing(props: LinkListingProps) {
     }, [setSelectedAddedArea, setModalVisibility]);
 
     const unitMapping = useMemo(() => (
-        mapping && mapping[currentAdminLevel]
+        mapping?.[currentAdminLevel]
     ), [currentAdminLevel, mapping]);
 
     const firstSettings = useMemo(() => (

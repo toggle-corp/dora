@@ -5,9 +5,9 @@ export function useStoredState<T extends string>(key: string, defaultValue: T): 
     T,
     (v: T) => void,
 ] {
-    const previousValue = localStorage.getItem(key) as T;
-
-    const [value, setValue] = useState<T>(previousValue || defaultValue);
+    const [value, setValue] = useState<T>(() => (
+        localStorage.getItem(key) as T || defaultValue
+    ));
 
     const setValueAndStore = useCallback(
         (v: T) => {

@@ -168,8 +168,12 @@ function Home(props: Props) {
 
     const [currentAdminLevel, setCurrentAdminLevel] = useState(adminLevels[0].key);
     const [storedMapping, setStoredMapping] = useStoredState<string>('mapping', '{}');
+
     const [mapping, setMapping] = useState<{ [key: string]: Link[] } | undefined>(
-        (doesObjectHaveNoData(JSON.parse(storedMapping)) ? undefined : JSON.parse(storedMapping)),
+        () => {
+            const parsedMapping = JSON.parse(storedMapping);
+            return doesObjectHaveNoData(parsedMapping) ? undefined : parsedMapping;
+        },
     );
 
     useEffect(() => {
@@ -273,7 +277,8 @@ function Home(props: Props) {
 
     const handleFileUpload = useCallback((event) => {
         const reader = new FileReader();
-        reader.onload = function (eventForOnload) {
+
+        reader.onload = (eventForOnload) => {
             const jsonObj = JSON.parse(String(eventForOnload.target?.result));
             if (!doesObjectHaveNoData(jsonObj)) {
                 setMapping(jsonObj);

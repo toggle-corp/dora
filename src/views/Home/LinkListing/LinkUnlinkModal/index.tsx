@@ -24,6 +24,7 @@ type BBox = [number, number, number, number];
 
 interface AreaProps {
     feature: GeoJson;
+    allAreas: GeoJson;
     featureKey: number;
     code?: string | number;
     pointer?: Pointer;
@@ -39,6 +40,8 @@ function Area(props: AreaProps) {
         pointer,
         isDeleted,
     } = props;
+
+    const area = useMemo(() => `${calculateArea(feature)} sq.km`, [feature]);
 
     return (
         <div>
@@ -57,7 +60,7 @@ function Area(props: AreaProps) {
                 />
                 <TextOutput
                     label="Area"
-                    value={`${calculateArea(feature)} sq.km`}
+                    value={area}
                 />
             </div>
         </div>
@@ -155,6 +158,13 @@ function LinkUnlinkModal(props: LinkUnlinkProps) {
     const selectedDeletedAreaObj = useMemo(() => (
         deletedAreas.find((da) => da.from === selectedDeletedArea)
     ), [selectedDeletedArea, deletedAreas]);
+
+    const selectedDeletedObjectArea = useMemo(() => {
+        if (isNotDefined(selectedDeletedAreaObj)) {
+            return '-';
+        }
+        return `${calculateArea(selectedDeletedAreaObj.feature)} sq.km`;
+    }, [selectedDeletedAreaObj]);
 
     return (
         <Modal
@@ -282,7 +292,7 @@ function LinkUnlinkModal(props: LinkUnlinkProps) {
                             />
                             <TextOutput
                                 label="Area"
-                                value={`${calculateArea(selectedDeletedAreaObj.feature)} sq.km`}
+                                value={selectedDeletedObjectArea}
                             />
                         </div>
                     )}

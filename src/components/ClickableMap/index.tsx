@@ -77,10 +77,10 @@ function ClickableMap(props: Props) {
         pointer,
     } = props;
 
-    const collection = {
+    const collection = useMemo(() => ({
         type: 'FeatureCollection',
         features: deletedAreas.map((da) => da.feature),
-    };
+    }), [deletedAreas]);
 
     const handleAreaClick = useCallback((feature) => {
         const selectedArea = deletedAreas.find((da) => da?.feature?.id === feature.id);
