@@ -1,8 +1,15 @@
-import React, { useState, useCallback, useMemo } from 'react';
-import { _cs, isDefined, isNotDefined } from '@togglecorp/fujs';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import {
+    _cs,
+    isDefined,
+    isNotDefined,
+    doesObjectHaveNoData,
+} from '@togglecorp/fujs';
+import produce from 'immer';
 
 import Button from '#components/Button';
 import SegmentInput from '#components/SegmentInput';
+import Label from '#components/Label';
 
 import oldCountry from '#resources/admin0.json';
 import oldDepartment from '#resources/admin1.json';
@@ -11,20 +18,23 @@ import oldMuni from '#resources/admin2.json';
 import newCountry from '#resources/new-admin0.json';
 import newDepartment from '#resources/new-admin1.json';
 import newMuni from '#resources/new-admin2.json';
+import {
+    AdminLevel,
+    AdminSet,
+    GeoJson,
+} from '#typings';
+
+import { useStoredState } from '#hooks/useStoredState';
 
 import AdminLevels from './AdminLevels';
 import Sets from './Sets';
 import Map from './ComparisonMap';
 import {
-    AdminLevel,
-    AdminSet,
-    GeoJson,
-} from './typings';
-import {
-    getProperty,
     generateMapping,
     Link,
 } from './utils';
+
+import LinkListing from './LinkListing';
 
 import styles from './styles.css';
 
@@ -38,92 +48,6 @@ function addUniqueIds(geoJson: GeoJson) {
         ...geoJson,
         features: newFeatures,
     });
-}
-
-interface LinkListingProps {
-    currentAdminLevel: string;
-    data: { [key: string]: Link[] } | undefined;
-    firstSet: AdminSet;
-    secondSet: AdminSet;
-    className?: string;
-}
-function LinkListing(props: LinkListingProps) {
-    const {
-        className,
-        currentAdminLevel,
-        data,
-        firstSet,
-        secondSet,
-    } = props;
-
-    if (!data) {
-        return null;
-    }
-
-    const unitMapping = data[currentAdminLevel];
-    const firstSettings = firstSet.settings.find((item) => item.adminLevel === currentAdminLevel);
-    const secondSettings = secondSet.settings.find((item) => item.adminLevel === currentAdminLevel);
-    // This is an error case
-    if (!unitMapping || !firstSettings || !secondSettings) {
-        return null;
-    }
-
-    const deleted = unitMapping
-        .filter((item) => isDefined(item.from) && isNotDefined(item.to))
-        .map((item) => {
-            const property = getProperty(
-                firstSettings.pointer,
-                firstSettings.geoJson.features[item.from],
-            );
-            return {
-                from: item.from,
-                name: property.name,
-                code: property.code,
-            };
-        });
-
-    const added = unitMapping
-        .filter((item) => isNotDefined(item.from) && isDefined(item.to))
-        .map((item) => {
-            const property = getProperty(
-                secondSettings.pointer,
-                secondSettings.geoJson.features[item.to],
-            );
-            return {
-                to: item.to,
-                name: property.name,
-                code: property.code,
-            };
-        });
-
-    return (
-        <div className={_cs(styles.links, className)}>
-            {added.length > 0 && (
-                <>
-                    <h2>Addition </h2>
-                    <div>
-                        {added.map((item) => (
-                            <div key={item.to}>
-                                {`${item.name} (${item.code})`}
-                            </div>
-                        ))}
-                    </div>
-                </>
-            )}
-            {deleted.length > 0 && (
-                <>
-                    <h2>Deletion</h2>
-                    <div>
-                        {deleted.map((item) => (
-                            <div key={item.from}>
-                                {`${item.name} (${item.code})`}
-                            </div>
-                        ))}
-                    </div>
-                </>
-            )}
-        </div>
-    );
 }
 
 const adminLevels: AdminLevel[] = [
@@ -225,8 +149,15 @@ const sets: AdminSet[] = [
     },
 ];
 
-const optionKeySelector = (d: AdminLevel) => d.key;
-const optionLabelSelector = (d: AdminLevel) => d.name;
+interface AdminLevelWithCount extends AdminLevel {
+    count?: number;
+}
+
+const optionKeySelector = (d: AdminLevelWithCount) => d.key;
+
+const optionLabelSelector = (d: AdminLevelWithCount) => (
+    isDefined(d.count) ? `${d.name} (${d.count})` : d.name
+);
 
 interface Props {
     className?: string;
@@ -236,17 +167,32 @@ function Home(props: Props) {
     const { className } = props;
 
     const [currentAdminLevel, setCurrentAdminLevel] = useState(adminLevels[0].key);
-    const [mapping, setMapping] = useState<{ [key: string]: Link[] } | undefined>(undefined);
+    const [storedMapping, setStoredMapping] = useStoredState<string>('mapping', '{}');
+
+    const [mapping, setMapping] = useState<{ [key: string]: Link[] } | undefined>(
+        () => {
+            const parsedMapping = JSON.parse(storedMapping);
+            return doesObjectHaveNoData(parsedMapping) ? undefined : parsedMapping;
+        },
+    );
+
+    useEffect(() => {
+        if (isDefined(mapping)) {
+            setStoredMapping(JSON.stringify(mapping));
+        } else {
+            setStoredMapping('{}');
+        }
+    }, [mapping, setStoredMapping]);
 
     const firstSet = sets[0];
     const secondSet = sets[1];
     const oldSource = useMemo(() => (
         firstSet.settings.find((s) => s.adminLevel === currentAdminLevel)?.geoJson
-    ), [currentAdminLevel]);
+    ), [currentAdminLevel, firstSet]);
 
     const newSource = useMemo(() => (
         secondSet.settings.find((s) => s.adminLevel === currentAdminLevel)?.geoJson
-    ), [currentAdminLevel]);
+    ), [currentAdminLevel, secondSet]);
 
     const handleCalculate = useCallback(
         () => {
@@ -255,6 +201,94 @@ function Home(props: Props) {
         },
         [firstSet, secondSet],
     );
+
+    const adminLevelsWithCount = useMemo(() => {
+        if (!mapping) {
+            return adminLevels;
+        }
+        return adminLevels.map((level) => ({
+            ...level,
+            count: mapping[level.key]
+                .filter((link) => isNotDefined(link.to) || isNotDefined(link.from)).length,
+        }));
+    }, [mapping]);
+
+    const handleAreasLink = useCallback((to: number, from: number, adminLevel: AdminLevel['key']) => {
+        if (
+            isNotDefined(mapping)
+            || isNotDefined(to)
+            || isNotDefined(from)
+            || isNotDefined(adminLevel)
+        ) {
+            return;
+        }
+        const newMapping = produce(mapping, (safeMapping) => {
+            const currentAdminMapping = safeMapping[adminLevel];
+            const toIndex = currentAdminMapping.findIndex((map) => map.to === to);
+            if (toIndex !== -1) {
+                // eslint-disable-next-line no-param-reassign
+                safeMapping[adminLevel].splice(toIndex, 1);
+            }
+            const fromIndex = currentAdminMapping.findIndex((map) => map.from === from);
+            if (fromIndex !== -1) {
+                // eslint-disable-next-line no-param-reassign
+                safeMapping[adminLevel].splice(fromIndex, 1);
+            }
+            safeMapping[adminLevel].push({
+                to,
+                from,
+            });
+        });
+        setMapping(newMapping);
+    }, [mapping, setMapping]);
+
+    const handleAreasUnlink = useCallback((to: number, from: number, adminLevel: AdminLevel['key']) => {
+        if (
+            isNotDefined(mapping)
+            || isNotDefined(to)
+            || isNotDefined(from)
+            || isNotDefined(adminLevel)
+        ) {
+            return;
+        }
+        const newMapping = produce(mapping, (safeMapping) => {
+            const currentAdminMapping = safeMapping[adminLevel];
+            const toIndex = currentAdminMapping.findIndex((map) => map.to === to);
+            if (
+                toIndex !== -1
+                && currentAdminMapping[toIndex].from === from
+            ) {
+                // eslint-disable-next-line no-param-reassign
+                safeMapping[adminLevel].splice(toIndex, 1);
+                safeMapping[adminLevel].push({
+                    to,
+                });
+                safeMapping[adminLevel].push({
+                    from,
+                });
+            }
+        });
+        setMapping(newMapping);
+    }, [mapping, setMapping]);
+
+    const downloadLink = useMemo(() => (
+        `data:text/json;charset=utf-8,${encodeURIComponent(storedMapping)}`
+    ), [storedMapping]);
+
+    const handleFileUpload = useCallback((event) => {
+        const reader = new FileReader();
+
+        reader.onload = (eventForOnload) => {
+            const jsonObj = JSON.parse(String(eventForOnload.target?.result));
+            if (!doesObjectHaveNoData(jsonObj)) {
+                setMapping(jsonObj);
+            } else {
+                console.error('File import error!!');
+            }
+        };
+
+        reader.readAsText(event.target.files[0]);
+    }, [setMapping]);
 
     return (
         <div className={_cs(className, styles.home)}>
@@ -270,28 +304,55 @@ function Home(props: Props) {
                 >
                     Calculate
                 </Button>
+                <div className={styles.fileImportContainer}>
+                    <Label>
+                        Import Mapping
+                    </Label>
+                    <input
+                        className={styles.fileImport}
+                        type="file"
+                        onChange={handleFileUpload}
+                    />
+                </div>
             </div>
             <div className={styles.mainContent}>
-                <SegmentInput
-                    className={styles.tabs}
-                    options={adminLevels}
-                    optionKeySelector={optionKeySelector}
-                    optionLabelSelector={optionLabelSelector}
-                    value={currentAdminLevel}
-                    onChange={setCurrentAdminLevel}
-                />
+                <div className={styles.header}>
+                    <SegmentInput
+                        className={styles.tabs}
+                        options={adminLevelsWithCount}
+                        optionKeySelector={optionKeySelector}
+                        optionLabelSelector={optionLabelSelector}
+                        value={currentAdminLevel}
+                        onChange={setCurrentAdminLevel}
+                    />
+                    <a
+                        className={styles.downloadLink}
+                        href={downloadLink}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        download="mapping.json"
+                    >
+                        Export Mapping
+                    </a>
+                </div>
                 <div className={styles.content}>
                     <Map
-                        className={styles.map}
+                        className={_cs(
+                            styles.map,
+                            isNotDefined(mapping) && styles.fullMap,
+                        )}
+                        currentAdminLevel={currentAdminLevel}
                         oldSource={oldSource}
                         newSource={newSource}
                     />
                     <LinkListing
                         className={styles.linkListing}
-                        data={mapping}
+                        mapping={mapping}
                         currentAdminLevel={currentAdminLevel}
                         firstSet={firstSet}
                         secondSet={secondSet}
+                        onAreasLink={handleAreasLink}
+                        onAreasUnlink={handleAreasUnlink}
                     />
                 </div>
             </div>

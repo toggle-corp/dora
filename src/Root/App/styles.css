@@ -1,3 +1,17 @@
+::-webkit-scrollbar-track {
+    background-color: #eee;
+}
+
+::-webkit-scrollbar {
+    background-color: #eee;
+    width: var(--width-scrollbar);
+    height: var(--width-scrollbar);
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+}
+
 :root {
     /* SPACING */
     --spacing-super-small: 1px;
@@ -13,6 +27,7 @@
     --radius-button: 4px;
     --radius-input: 4px;
     --radius-modal: 8px;
+    --radius-card: 8px;
 
     /* DIMENSIONS */
     --width-separator-thin: 1px;
@@ -45,9 +60,13 @@
 
     /* COLOR GENERAL */
     --color-background: #fff;
+    --color-background-dark: #f5f5f5;
+    --color-background-card: #f8f1ff;
+    --color-background-added-area: #e1c7fd;
+    --color-background-removed-area: #ffbdc3;
+
 
     --color-background-accent-hint: #18cc9c55; /* FIXME: remove this usage */
-
     /* COLOR BACKDROP */
 
     --color-backdrop-light: rgba(255, 255, 255, .8);

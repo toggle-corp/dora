@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import { _cs } from '@togglecorp/fujs';
 import bbox from '@turf/bbox';
-import buffer from '@turf/buffer';
 
 import Map from '#re-map';
 import MapContainer from '#re-map/MapContainer';
@@ -10,8 +9,8 @@ import MapLayer from '#re-map/MapSource/MapLayer';
 import MapBounds from '#re-map/MapBounds';
 
 import {
+    Pointer,
     GeoJson,
-    AdminLevel,
 } from '#typings';
 
 import styles from './styles.css';
@@ -20,49 +19,67 @@ type BBox = [number, number, number, number];
 
 interface Props {
     className?: string;
-    oldSource?: GeoJson;
-    newSource?: GeoJson;
-    currentAdminLevel: AdminLevel['key'];
+    feature?: GeoJson;
+    featureKey: string | number;
+    pointer?: Pointer;
+    isDeleted: boolean;
+    allAreas: GeoJson;
 }
 
 const lightStyle = 'mapbox://styles/mapbox/light-v10';
 
-const fillPaint: mapboxgl.FillPaint = {
-    'fill-color': '#786cf4',
-    'fill-opacity': [
-        'case',
-        ['==', ['feature-state', 'hovered'], true],
-        0.09,
-        0.06,
-    ],
+const nonClickableOutlinePaint: mapboxgl.LinePaint = {
+    'line-color': '#414141',
+    'line-width': 1,
+    'line-opacity': 1,
 };
 
-const outlinePaint: mapboxgl.LinePaint = {
+const redOutlinePaint: mapboxgl.LinePaint = {
     'line-color': '#f34236',
     'line-width': 1,
     'line-opacity': 1,
 };
 
-const newOutlinePaint: mapboxgl.LinePaint = {
+const blueOutlinePaint: mapboxgl.LinePaint = {
     'line-color': '#6200ee',
     'line-width': 1,
     'line-opacity': 1,
 };
 
+const bluePaint: mapboxgl.FillPaint = {
+    'fill-color': '#6200ee',
+    'fill-opacity': 0.3,
+};
+
+const redPaint: mapboxgl.FillPaint = {
+    'fill-color': '#f34236',
+    'fill-opacity': 0.3,
+};
+
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const noOp = () => {};
 
-function ComparisonMap(props: Props) {
+function AreaMap(props: Props) {
     const {
         className,
-        oldSource,
-        newSource,
-        currentAdminLevel,
+        feature,
+        featureKey,
+        allAreas,
+        isDeleted,
+        pointer,
     } = props;
 
     const bounds: (BBox | undefined) = useMemo(() => (
-        oldSource ? bbox(oldSource) : undefined
-    ), [oldSource]);
+        feature ? bbox(feature) : undefined
+    ), [feature]);
+
+    const labelLayout: mapboxgl.SymbolLayout = useMemo(() => ({
+        'text-field': ['get', pointer?.name],
+        'text-size': 14,
+        'text-justify': 'center',
+        'text-anchor': 'center',
+        'text-padding': 0,
+    }), [pointer?.name]);
 
     return (
         <div className={_cs(styles.map, className)}>
@@ -79,46 +96,62 @@ function ComparisonMap(props: Props) {
                     bounds={bounds}
                     padding={50}
                 />
-                {oldSource && (
+                {allAreas && (
                     <MapSource
-                        sourceKey={`old-source-${currentAdminLevel}`}
+                        sourceKey="all-areas"
                         sourceOptions={{
                             type: 'geojson',
                         }}
-                        geoJson={oldSource}
+                        geoJson={allAreas}
                     >
                         <MapLayer
-                            layerKey="old-source-fill"
-                            onMouseEnter={noOp}
-                            layerOptions={{
-                                type: 'fill',
-                                paint: fillPaint,
-                            }}
-                        />
-                        <MapLayer
-                            layerKey="old-source-outline"
+                            layerKey="all-areas-outline"
                             onMouseEnter={noOp}
                             layerOptions={{
                                 type: 'line',
-                                paint: outlinePaint,
+                                paint: nonClickableOutlinePaint,
+                            }}
+                        />
+                        <MapLayer
+                            layerKey="all-areas-label"
+                            onMouseEnter={noOp}
+                            layerOptions={{
+                                type: 'symbol',
+                                layout: labelLayout,
                             }}
                         />
                     </MapSource>
                 )}
-                {newSource && (
+                {feature && (
                     <MapSource
-                        sourceKey={`new-source-${currentAdminLevel}`}
+                        sourceKey={`source-${featureKey}`}
                         sourceOptions={{
                             type: 'geojson',
                         }}
-                        geoJson={newSource}
+                        geoJson={feature}
                     >
                         <MapLayer
-                            layerKey="new-source-outline"
+                            layerKey="selected-area-outline"
                             onMouseEnter={noOp}
                             layerOptions={{
                                 type: 'line',
-                                paint: newOutlinePaint,
+                                paint: isDeleted ? redOutlinePaint : blueOutlinePaint,
+                            }}
+                        />
+                        <MapLayer
+                            layerKey="selected-area-fill"
+                            onMouseEnter={noOp}
+                            layerOptions={{
+                                type: 'fill',
+                                paint: isDeleted ? redPaint : bluePaint,
+                            }}
+                        />
+                        <MapLayer
+                            layerKey="selected-area-label"
+                            onMouseEnter={noOp}
+                            layerOptions={{
+                                type: 'symbol',
+                                layout: labelLayout,
                             }}
                         />
                     </MapSource>
@@ -128,4 +161,4 @@ function ComparisonMap(props: Props) {
     );
 }
 
-export default ComparisonMap;
+export default AreaMap;

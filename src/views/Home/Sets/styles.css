@@ -1,5 +1,6 @@
 .set {
     margin-bottom: var(--spacing-medium);
+    border-radius: var(--radius-card);
     background-color: var(--color-background-card);
     padding: var(--spacing-medium);
     overflow-y: auto;

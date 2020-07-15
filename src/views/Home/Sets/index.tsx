@@ -4,7 +4,7 @@ import {
     listToMap,
 } from '@togglecorp/fujs';
 
-import { AdminLevel, AdminSet } from '../typings';
+import { AdminLevel, AdminSet } from '#typings';
 import { validate } from '../utils';
 import styles from './styles.css';
 

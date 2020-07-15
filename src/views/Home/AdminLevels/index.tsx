@@ -1,7 +1,7 @@
 import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 
-import { AdminLevel } from '../typings';
+import { AdminLevel } from '#typings';
 import styles from './styles.css';
 
 interface AdminLevelProps {
@@ -38,7 +38,7 @@ function AdminLevels(props: Props) {
             <div className={styles.header}>
                 <h5>Admin Levels</h5>
             </div>
-            <div className={styles.adminLevelsList}>
+            <div>
                 {adminLevels.map((ad) => (
                     <AdminLevelItem
                         key={ad.key}

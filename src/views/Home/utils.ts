@@ -6,7 +6,11 @@ import {
     AdminLevel,
     Pointer,
     GeoJsonFeature,
-} from './typings';
+} from '#typings';
+
+function getCanonicalName(value: string) {
+    return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
 
 interface Property {
     index: number;
@@ -169,15 +173,15 @@ function generateUnitMapping(unitFoo: Settings, unitBar: Settings) {
         fooProperties
             .map((item) => item.name)
             .filter(isDefined)
-            .map((item) => item.toLocaleLowerCase()),
+            .map(getCanonicalName),
         (item) => item,
     );
     const fooDuplicateNamesSet = new Set(fooDuplicateNames);
     const validFooProperties = fooProperties.filter(
-        (item) => isDefined(item.name) && !fooDuplicateNamesSet.has(item.name.toLocaleLowerCase()),
+        (item) => isDefined(item.name) && !fooDuplicateNamesSet.has(getCanonicalName(item.name)),
     );
     const invalidFooProperties = fooProperties.filter((item) => (
-        isNotDefined(item.name) || fooDuplicateNamesSet.has(item.name.toLocaleLowerCase())
+        isNotDefined(item.name) || fooDuplicateNamesSet.has(getCanonicalName(item.name))
     ));
 
     const barProperties = getProperties(unitBar);
@@ -185,15 +189,15 @@ function generateUnitMapping(unitFoo: Settings, unitBar: Settings) {
         barProperties
             .map((item) => item.name)
             .filter(isDefined)
-            .map((item) => item.toLocaleLowerCase()),
+            .map(getCanonicalName),
         (item) => item,
     );
     const barDuplicateNamesSet = new Set(barDuplicateNames);
     const validBarProperties = barProperties.filter(
-        (item) => isDefined(item.name) && !barDuplicateNamesSet.has(item.name.toLocaleLowerCase()),
+        (item) => isDefined(item.name) && !barDuplicateNamesSet.has(getCanonicalName(item.name)),
     );
     const invalidBarProperties = barProperties.filter((item) => (
-        isNotDefined(item.name) || barDuplicateNamesSet.has(item.name.toLocaleLowerCase())
+        isNotDefined(item.name) || barDuplicateNamesSet.has(getCanonicalName(item.name))
     ));
 
     const {
@@ -201,7 +205,11 @@ function generateUnitMapping(unitFoo: Settings, unitBar: Settings) {
         modified,
         removed,
         // unmodified, // NOTE: we will note have unmodified at all
-    } = findDifferenceInList(validFooProperties, validBarProperties, (item) => item.name);
+    } = findDifferenceInList(
+        validFooProperties,
+        validBarProperties,
+        (item) => getCanonicalName(item.name),
+    );
     // NOTE: name is defined here
 
     const links: Link[] = [];

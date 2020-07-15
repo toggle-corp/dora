@@ -3,6 +3,6 @@
     flex-direction: column;
 
     .map-container {
-        height: 512px;
+        height: 100%;
     }
 }

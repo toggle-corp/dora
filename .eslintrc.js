@@ -26,9 +26,11 @@ module.exports = {
                 'alias': {
                     '#components': './src/components',
                     '#config': './src/config',
+                    '#hooks': './src/hooks',
                     '#request': './src/request',
                     '#resources': './resources',
                     '#re-map': './src/vendor/re-map',
+                    '#typings': './src/typings',
                     '#schema': './src/schema',
                     '#ts': './src/ts',
                     '#utils': './src/utils',
