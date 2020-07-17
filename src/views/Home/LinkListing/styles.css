@@ -46,8 +46,14 @@
         }
     }
 
-    .tabs {
+    .main-header {
+        display: flex;
+        align-items: center;
         flex-shrink: 0;
+
+        .tabs {
+            flex-grow: 1;
+        }
     }
 
     .unlinked-content {
