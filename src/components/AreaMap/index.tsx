@@ -1,12 +1,13 @@
 import React, { useMemo } from 'react';
 import { _cs } from '@togglecorp/fujs';
+import Map, {
+    MapContainer,
+    MapSource,
+    MapLayer,
+    MapBounds,
+} from '@togglecorp/re-map';
 import bbox from '@turf/bbox';
 
-import Map from '#re-map';
-import MapContainer from '#re-map/MapContainer';
-import MapSource from '#re-map/MapSource';
-import MapLayer from '#re-map/MapSource/MapLayer';
-import MapBounds from '#re-map/MapBounds';
 
 import {
     Pointer,
