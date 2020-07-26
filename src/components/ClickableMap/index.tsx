@@ -3,12 +3,12 @@ import {
     _cs,
     isDefined,
 } from '@togglecorp/fujs';
-
-import Map from '#re-map';
-import MapContainer from '#re-map/MapContainer';
-import MapSource from '#re-map/MapSource';
-import MapLayer from '#re-map/MapSource/MapLayer';
-import MapBounds from '#re-map/MapBounds';
+import Map, {
+    MapContainer,
+    MapSource,
+    MapLayer,
+    MapBounds,
+} from '@togglecorp/re-map';
 
 import {
     DeletedItemProps,
