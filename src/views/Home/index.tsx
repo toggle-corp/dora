@@ -7,7 +7,8 @@ import {
 } from '@togglecorp/fujs';
 import produce from 'immer';
 
-import Button from '#components/Button';
+import { Button } from '@togglecorp/toggle-ui';
+
 import SegmentInput from '#components/SegmentInput';
 import Label from '#components/Label';
 

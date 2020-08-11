@@ -155,6 +155,7 @@
         "@togglecorp/fujs": "^1.8.0",
         "@togglecorp/ravl": "^2.0.0",
         "@togglecorp/re-map": "^0.0.2",
+        "@togglecorp/toggle-ui": "^0.1.1",
         "@turf/area": "^6.0.1",
         "@turf/bbox": "^6.0.1",
         "@turf/buffer": "^5.1.5",

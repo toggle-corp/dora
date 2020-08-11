@@ -972,6 +972,14 @@
     core-js-pure "^3.0.0"
     regenerator-runtime "^0.13.4"
 
+"@babel/runtime-corejs3@^7.10.5":
+  version "7.10.5"
+  resolved "https://registry.yarnpkg.com/@babel/runtime-corejs3/-/runtime-corejs3-7.10.5.tgz#a57fe6c13045ca33768a2aa527ead795146febe1"
+  integrity sha512-RMafpmrNB5E/bwdSphLr8a8++9TosnyJp98RZzI6VOx2R2CCMpsXXXRvmI700O9oEKpXdZat6oEK68/F0zjd4A==
+  dependencies:
+    core-js-pure "^3.0.0"
+    regenerator-runtime "^0.13.4"
+
 "@babel/runtime@^7.1.2", "@babel/runtime@^7.10.1", "@babel/runtime@^7.4.5", "@babel/runtime@^7.5.5", "@babel/runtime@^7.7.7", "@babel/runtime@^7.8.4":
   version "7.10.1"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.10.1.tgz#b6eb75cac279588d3100baecd1b9894ea2840822"
@@ -1705,6 +1713,13 @@
   dependencies:
     "@babel/runtime" "^7.7.7"
 
+"@togglecorp/fujs@^1.9.2-beta.0":
+  version "1.9.2-beta.0"
+  resolved "https://registry.yarnpkg.com/@togglecorp/fujs/-/fujs-1.9.2-beta.0.tgz#f2a63a35e463f8f8b3b6b64ca3e9e290f9787b3f"
+  integrity sha512-Zdo3XBkJftTJ0GUESbONeHlFDLxZe29eMdIU5J6SIedOSD1LLgYu3mCw/tvmncikw0z4uhW7sMs+X3+L0FqeSw==
+  dependencies:
+    "@babel/runtime" "^7.7.7"
+
 "@togglecorp/ravl@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@togglecorp/ravl/-/ravl-2.0.0.tgz#b030fcb9a29dc091bfe1a70147a027f4d0ba1c45"
@@ -1720,6 +1735,16 @@
     "@togglecorp/fujs" "^1.8.0"
     immer "^7.0.5"
     resize-observer-polyfill "^1.5.1"
+
+"@togglecorp/toggle-ui@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@togglecorp/toggle-ui/-/toggle-ui-0.1.1.tgz#4e0b17c64af3aa9362b022317e997ad4b44db131"
+  integrity sha512-9PR/ikIuSjNmmTjVOJ+aLetkdZC2hKwZQ8+weYxwK19tM+N1PvVtfyMMyS87Kq1L0eawKIBO7Us2zJKtQsBjzg==
+  dependencies:
+    "@babel/runtime-corejs3" "^7.10.5"
+    "@togglecorp/fujs" "^1.9.2-beta.0"
+    react-icons "^3.10.0"
+    resize-observer "^1.0.0"
 
 "@turf/area@^6.0.1":
   version "6.0.1"
@@ -10312,7 +10337,7 @@ react-dom@^0.0.0-experimental-33c3af284:
     object-assign "^4.1.1"
     scheduler "0.0.0-experimental-33c3af284"
 
-react-icons@^3.9.0:
+react-icons@^3.10.0, react-icons@^3.9.0:
   version "3.10.0"
   resolved "https://registry.yarnpkg.com/react-icons/-/react-icons-3.10.0.tgz#6c217a2dde2e8fa8d293210023914b123f317297"
   integrity sha512-WsQ5n1JToG9VixWilSo1bHv842Cj5aZqTGiS3Ud47myF6aK7S/IUY2+dHcBdmkQcCFRuHsJ9OMUI0kTDfjyZXQ==
@@ -10713,6 +10738,11 @@ resize-observer-polyfill@^1.5.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/resize-observer-polyfill/-/resize-observer-polyfill-1.5.1.tgz#0e9020dd3d21024458d4ebd27e23e40269810464"
   integrity sha512-LwZrotdHOo12nQuZlHEmtuXdqGoOD0OhaxopaNFxWzInpEgaLWoVuAMbTzixuosCx2nEG58ngzW3vxdWoxIgdg==
+
+resize-observer@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/resize-observer/-/resize-observer-1.0.0.tgz#4f8380b73b411af4ed7d916fe85a2d59900e71ef"
+  integrity sha512-D7UFShDm2TgrEDEyeg+/tTEbvOgPWlvPAfJtxiKp+qutu6HowmcGJKjECgGru0PPDIj3SAucn3ZPpOx54fF7DQ==
 
 resolve-cwd@^2.0.0:
   version "2.0.0"
